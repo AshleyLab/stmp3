@@ -1,0 +1,25 @@
+inputOrProbandBam
+filtering	
+debugArguments	
+calling	
+familyBams
+familyFastqs
+filtering
+preprocessing	smA	ccP
+familyVcfs	
+inputOrProbandFastq	
+runArchitecture	
+pedFile	
+#inputOrProbandVCF: include the path to the vcf we want to use
+inputOrProbandVcf
+#arguments explaining what annotations we want to use
+annotation
+finalOutputDir
+#A list to filter the vcf on 
+variantListToFilterOn
+#If a parameter is passed in here, we just use this XLS and do stuff with the XLS
+alreadyGeneratedXls
+#the spreadsheet used by the GCs etc
+gcXls
+#whether or not you should export the final xls to powerpoint (any value is interpretted as yes)
+exportToPowerpoint
