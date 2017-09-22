@@ -52,6 +52,7 @@ import filter_vcf_by_variant_list
 import prepare_vcfanno_conf
 import write_annotated_vcf_to_xls
 import merge_and_process_xls
+import general_preprocessing
 #import segregation_util
 
 #where this script is (useful for tools like vcf anno where we need to cd in and out of the directory)
@@ -208,7 +209,7 @@ if len(controlParamDict['inputOrProbandVcf']) > 0:  #only do the following if an
 
 			#now we run general preprocessing dot py
 			#ALERT! some of these parameters should maybe live in the pipeline controls file
-			preprocessingScriptPath = '/scratch/users/noahfrie/devCode/stmp2/code/general_preprocessing.py'
+			preprocessingScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/general_preprocessing.py'
 
 			#file abbreviations from analysis_pipeline_master
 			#smA (split multi-allelic)
@@ -279,7 +280,7 @@ if len(controlParamDict['filtering']) > 0:
 #Paths for annotation files
 exacPath = '/share/PI/euan/apps/stmp/data/datasets/datasetsForVcfanno/ExAC.r0.3.1.sites.vep.vcf.gz'
 caddPath = '/scratch/users/noahfrie/devCode/stmp2/vcfanno/annotationDataFiles/cadd_v1.3.vcf.gz'
-gnomadPath = '/share/PI/euan/apps/stmp/data/datasets/datasetsForVcfanno/gnomad.exomes.r2.0.1.sites.vcf.gz'
+gnomadPath = '/scratch/PI/euan/common/gnomad_data/vcf/exomes/gnomad.exomes.r2.0.1.sites.vcf.gz'  #note has to be the absolute path
 clinvarPath = '/share/PI/euan/apps/stmp/data/datasets/datasetsForVcfanno/clinvar_20170905.vcf.gz'
 
 
@@ -341,6 +342,11 @@ if len(controlParamDict['gcXls']) > 0:  #if a gc (genetic counselor) xls is incl
 	gcXls = controlParamDict['gcXls'][0]
 	merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls)
 
+if len(controlParamDict['exportToPowerpoint']) > 0:
+	powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
+	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + 'UDNID'  #alert change and add actual udnid support
+	print cmd
+	subprocess.Popen(cmd, shell=True).wait()
 
 print 'final working vcf: ', currentWorkingVcf
 print 'stmp completed'
