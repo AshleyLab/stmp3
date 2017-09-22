@@ -11,7 +11,7 @@ import general_utils
 import segregation_util
 import os
 import logging
-import stmp_annotation_util
+#import stmp_annotation_util
 
 
 fasta_ref="/share/PI/euan/apps/bcbio/genomes/Hsapiens/GRCh37/seq/GRCh37.fa"
