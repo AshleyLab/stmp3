@@ -7,6 +7,7 @@ from pptx.enum.shapes import *
 from pptx.dml.color import *
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
 import sys
+import os
 
 import xls_parsing_functions
 
@@ -28,16 +29,17 @@ TABLE_WIDTH = Inches(2.75)
 #Alert the RVIS value is not validated
 IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'SIFT Function'),
 ('PolyPhen:', 'PolyPhen-2 Function'),
-('MutationTaster:', 'MutationTaster'),
-('RVIS:', 'RVIS'), ('CADD:', 'CADD Score'),
-('PhylopP100:', 'phyloP100way'),
+('MutationTaster:', 'NI'),
+('RVIS:', 'RVIS'),
+('CADD:', 'CADD Score'),
+('PhylopP100:', 'NA'),
 ('UCSC:', 'UCSC')]
 #Alert the exac pop max value is incorrect
 ALLELE_TABLE_ROW_NAMES = [('ExAC (overall):','ExAC (%)'),
 ('ExAC (popmax):', '?'),
 ('gnomAD (overall):', 'gnomad'),
-('gnomAD (popmax):', 'gnomad'),
-('1000Genomes:', '1000 Genomes')]
+('gnomAD (popmax):', 'GNOMAD_Max_Allele_Freq'),
+('1000Genomes:', 'KG_AF_POPMAX')]
 ROWS_IN_SILICO_TABLE = len(IN_SILICO_TABLE_ROW_NAMES) + 1
 ROWS_ALLELE_TABLE = len(ALLELE_TABLE_ROW_NAMES) + 1
 TABLE_COLUMN_WIDTH = Inches(1.5)
@@ -112,7 +114,8 @@ def display_udn_logo(slide):
 	#convert them to inches
 	logoLeft = PPTX_WIDTH - UDN_LOGO_WIDTH - LOGO_OFFSET_FROM_SIDE
 	logoTop = PPTX_HEIGHT - UDN_LOGO_HEIGHT - LOGO_OFFSET_FROM_SIDE
-	slide.shapes.add_picture('UDN_logo_temp_screenshot.png', logoLeft, logoTop, UDN_LOGO_WIDTH, UDN_LOGO_HEIGHT)
+	UDN_logo = '/share/PI/euan/apps/stmp3/necessaryDataFiles/UDN_logo_temp_screenshot.png' #path for where the UDN logo screenshot is
+	slide.shapes.add_picture(UDN_logo, logoLeft, logoTop, UDN_LOGO_WIDTH, UDN_LOGO_HEIGHT)
 
 #Add the UDN id to the corner
 def display_udn_id(slide, udnId):
@@ -140,10 +143,10 @@ def display_tscriptId_tscriptVariant_proteinVariant_and_exon(topOfSlideTextbox, 
 	p.text = text
 
 def display_chr_pos_ref_alt(topOfSlideTextbox, dfRow):
-	chromosome = xls_parsing_functions.get_xls_value(dfRow,'Chromosome', '****')
-	pos = xls_parsing_functions.get_xls_value(dfRow,'Position', '****')
-	ref = xls_parsing_functions.get_xls_value(dfRow,'Reference Allele', '****')
-	alt = xls_parsing_functions.get_xls_value(dfRow,'Sample Allele', '****')
+	chromosome = xls_parsing_functions.get_xls_value(dfRow,'CHROM', '****')
+	pos = xls_parsing_functions.get_xls_value(dfRow,'POS', '****')
+	ref = xls_parsing_functions.get_xls_value(dfRow,'REF', '****')
+	alt = xls_parsing_functions.get_xls_value(dfRow,'ALT', '****')
 	chrPos = ':'.join([chromosome, pos])
 	refAlt = ">".join([ref,alt])
 	text = ''.join([chrPos, refAlt])
@@ -320,16 +323,18 @@ for sheet in sheetsToExclude:
 for sheetName, df in sheetDict.items():
 	#iterate over the rows of the sheet and if written as what we should include we include
 	for index, row in df.iterrows():
+		print row
+		print '*************'
 		#Alert add an if statement for the 'export tab' the gcs will create 
 		if True:
 			slide = prs.slides.add_slide(blank_slide_layout)
 			populate_slide(slide, row, udnId)
 		#ALERT testing here is break statement 
-		break
+		#break
 	#ALERT testing here is break statement
-	break
+	#break
 
-saveFilename = udnId + '_curationSlides.pptx'
+saveFilename = os.path.join(os.getcwd(), udnId + '_curationSlides.pptx')
 print 'finished, saving file as ', saveFilename
 #filename is UDNID_slides.pptx
 prs.save(saveFilename)
