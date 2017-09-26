@@ -29,16 +29,21 @@ def parse_igv_comment(comment, passFailMode = True):
 
 #method for getting xls values with error checking for missing values
 def get_xls_value(row, key, missingVal = 'value missing'):
-	if key in row: return str(row[key])
-	else: return missingVal
+	if key in row:
+		return str(row[key])
+	else:
+		return missingVal
 
 #automatically tells us what to exclude from our 
 def exclude_sheets_based_on_missing_columns(sheetDict):
 	sheetsWithMissingColumns = []
 	for key, value in sheetDict.items():
 		curDf = sheetDict[key]
-		if 'Chromosome' not in curDf.columns:
+		#print curDf.columns
+		if 'CHROM' not in curDf.columns:
 			sheetsWithMissingColumns.append(key)
+	#print 'king rhoam'
+	#print sheetsWithMissingColumns
 	return sheetsWithMissingColumns
 
 
