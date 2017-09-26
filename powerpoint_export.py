@@ -27,7 +27,8 @@ BETWEEN_TABLE_OFFSET = Inches(0.3)
 TABLE_WIDTH = Inches(2.75)
 #these lists are a list of (displayTableName, excelColumnName) pairs
 #Alert the RVIS value is not validated
-IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'SIFT Function'),
+#The column names are what come from the vcf info tags
+IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'NC'),
 ('PolyPhen:', 'PolyPhen-2 Function'),
 ('MutationTaster:', 'NI'),
 ('RVIS:', 'RVIS'),
@@ -36,7 +37,7 @@ IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'SIFT Function'),
 ('UCSC:', 'UCSC')]
 #Alert the exac pop max value is incorrect
 ALLELE_TABLE_ROW_NAMES = [('ExAC (overall):','ExAC (%)'),
-('ExAC (popmax):', '?'),
+('ExAC (popmax):', 'ESP_AF_POPMAX'),
 ('gnomAD (overall):', 'gnomad'),
 ('gnomAD (popmax):', 'GNOMAD_Max_Allele_Freq'),
 ('1000Genomes:', 'KG_AF_POPMAX')]
@@ -134,9 +135,8 @@ def display_tscriptId_tscriptVariant_proteinVariant_and_exon(topOfSlideTextbox, 
 	tscriptId = xls_parsing_functions.get_xls_value(dfRow,'Transcript ID', '****')
 	tscriptVariant = xls_parsing_functions.get_xls_value(dfRow,'Transcript Variant', '****')
 	proteinVariant = xls_parsing_functions.get_xls_value(dfRow,'Protein Variant', '****')
-	#exon = xls_parsing_functions.get_xls_value(dfRow,'Protein Variant', '****')
-	#alert please change 
-	exon = 'exon'
+	exon = xls_parsing_functions.get_xls_value(dfRow,'Gene Region', '****')
+	#print tscriptId, tscriptVariant, proteinVariant
 	text = ' | '.join([tscriptId, tscriptVariant, proteinVariant, exon])
 	#add the text to the slide 
 	p = topOfSlideTextbox.add_paragraph()
@@ -169,7 +169,7 @@ def display_gene_function_textbox(slide, dfRow):
 	if(True): geneFunctionHeight = DEFAULT_TEXTBOX_HEIGHT
 	shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, TEXT_BOX_LEFT_OFFSET, ELEMENT_TOP_OFFSET, TEXT_BOX_WIDTH, geneFunctionHeight)
 	set_shape_color(shape, 80, 172, 196)
-	info = xls_parsing_functions.get_xls_value(dfRow,'Gene Function')
+	info = xls_parsing_functions.get_xls_value(dfRow,'SF')
 	set_shape_text(shape, "Gene function: ", info)
 	return ELEMENT_TOP_OFFSET + geneFunctionHeight
 
@@ -192,7 +192,7 @@ def display_known_disease_association_textbox(slide, dfRow, currentOffsetFromTop
 	shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, TEXT_BOX_LEFT_OFFSET, knownDiseaseAssocOffset, TEXT_BOX_WIDTH, knownDiseaseAssocHeight)
 	set_shape_color(shape, 190, 7, 18)
 	#Alert we need to change this
-	info = xls_parsing_functions.get_xls_value(dfRow, 'Clinical Features')
+	info = xls_parsing_functions.get_xls_value(dfRow, 'SD')
 	set_shape_text(shape, "Known Disease Association: ", info)
 
 ######################################################################################################
@@ -315,16 +315,16 @@ sheetsToExclude = set()
 sheetsToExclude = sheetsToExclude.union(set(xls_parsing_functions.exclude_sheets_based_on_missing_columns(sheetDict)))
 #remove all sheets to exlude from our dict
 for sheet in sheetsToExclude:
-	print sheetDict[sheet].columns
-	print '-------'
+	#print sheetDict[sheet].columns
+	#print '-------'
 	del sheetDict[sheet]
 
 #Main loop: create a slide for every variant specified for inclusion by checking out all the sheets and rows of the excel sheet
 for sheetName, df in sheetDict.items():
 	#iterate over the rows of the sheet and if written as what we should include we include
 	for index, row in df.iterrows():
-		print row
-		print '*************'
+		#print row
+		#print '*************'
 		#Alert add an if statement for the 'export tab' the gcs will create 
 		if True:
 			slide = prs.slides.add_slide(blank_slide_layout)
