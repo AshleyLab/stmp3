@@ -346,7 +346,7 @@ if len(controlParamDict['gcXls']) > 0:  #if a gc (genetic counselor) xls is incl
 if len(controlParamDict['udnForExportToPowerpoint']) > 0:
 	powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
 	udnId = controlParamDict['udnForExportToPowerpoint'][0]
-	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId + outputDir
+	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId + ' ' + outputDir
 	print cmd
 	subprocess.Popen(cmd, shell=True).wait()
 
