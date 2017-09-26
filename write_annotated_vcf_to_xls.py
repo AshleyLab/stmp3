@@ -42,7 +42,7 @@ def initialize_df(infoFieldsDict, formatTags):
 	colNames = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER']
 	for f in formatTags: colNames.append(f)
 	for key, value in infoFieldsDict.items():
-		print key, infoFieldsDict[key]
+		#print key, infoFieldsDict[key]
 		colNames.append(key) #append key as the column
 	#add chrom pos etc
 	df = pd.DataFrame(columns=colNames)
@@ -105,13 +105,13 @@ def only_keep_specified_rows(df, specifiedRows):
 	return df
 
 #global variable: which columns we want to include
-columnsToInclude = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'DP', 'GT', 'NC', 'ENSGN', 'ARIC_AA', 'TAMR', 'NA', 'AC_AFR', 'AC_EAS', 'AC_AMR', 'ARIC_EA', 'NG', 'NI', 'ENS', 'MT', 'AF_AFR', 'AF_AMR', 'AF_ASJ', 'AF_EAS', 'AF_FIN', 'AF_NFE', 'AF_OTH', 'AF_SAS', 'KG_AF_POPMAX', 'ESP_AF_POPMAX', 'NE', 'SX']
+columnsToInclude = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'DP', 'GT', 'NC', 'ENSGN', 'ARIC_AA', 'TAMR', 'NA', 'AC_AFR', 'AC_EAS', 'AC_AMR', 'ARIC_EA', 'NG', 'NI', 'ENS', 'MT', 'AF_AFR', 'AF_AMR', 'AF_ASJ', 'AF_EAS', 'AF_FIN', 'AF_NFE', 'AF_OTH', 'AF_SAS', 'KG_AF_POPMAX', 'ESP_AF_POPMAX', 'NE', 'SX', 'CLNSG']
 #only keep specified columns in our output
 onlyKeepSpecifiedColumns = False
 
 #main loop through the vcf file
 #goes through each line, first gets columns from the info fields then headers which it exports
-def vcf_to_xls(vcfFilePath):
+def vcf_to_xls(vcfFilePath, outputDir):
 	print 'writing ', vcfFilePath, ' to xls format'
 	with open(vcfFilePath) as f:
 		firstRecordFlag = True #flag to trigger the initialization of the df
@@ -137,7 +137,7 @@ def vcf_to_xls(vcfFilePath):
 		df = only_keep_specified_columns(df, columnsToInclude)
 	
 	#and finally write the dataframe to an xls	
-	outputXlsxName = os.path.join(os.getcwd(), 'outputTest.xlsx')	 
+	outputXlsxName = os.path.join(outputDir, 'stmpAnnotatedOutput.xlsx')	 
 	writer = pd.ExcelWriter(outputXlsxName)
 	infoDf.to_excel(writer, 'Column Descriptions', index = False)
 	df.to_excel(writer,'Sheet1', index = False)
