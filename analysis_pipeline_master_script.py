@@ -166,6 +166,7 @@ controlParamDict = parse_control_tsv(sys.argv[1])
 check_argument_coherence(controlParamDict) #make sure the user didn't ask us to perform an impossible pipeline
 currentWorkingVcf = None
 currentWorkingXls = None
+outputDir = controlParamDict['finalOutputDir'][0]
 
 #BEGIN PIPELINE#####################################################
 
@@ -188,7 +189,7 @@ if len(controlParamDict['inputOrProbandVcf']) > 0:  #only do the following if an
 	for v in vcfs: 
 		fileDirectory = get_directory_of_file(v)
 		#for now we store all output in a separate directory that we call 
-		outputDir = os.path.join(fileDirectory, 'analysisPipelineOutput')
+		#outputDir = os.path.join(fileDirectory, 'analysisPipelineOutput')
 		#use a linux command to create the output directory
 		cmd = 'mkdir "{d}"'.format(d = outputDir)
 		print cmd
@@ -333,22 +334,24 @@ if len(controlParamDict['filtering']) > 0:
 ###########-----------XLS CREATION AND PROCESSING-------------------######################
 #CREATE the tiered xls--Now we work with excel sheets etc
 if currentWorkingVcf != None:
-	currentWorkingXls = write_annotated_vcf_to_xls.vcf_to_xls(currentWorkingVcf)
+	currentWorkingXls = write_annotated_vcf_to_xls.vcf_to_xls(currentWorkingVcf, outputDir)
 
 if len(controlParamDict['alreadyGeneratedXls']) > 0:  #set the current working vcf to be what the user specified if they specified something
 	currentWorkingXls = controlParamDict['alreadyGeneratedXls'][0]
 
 if len(controlParamDict['gcXls']) > 0:  #if a gc (genetic counselor) xls is included, go and perform the spreadsheet merging script
 	gcXls = controlParamDict['gcXls'][0]
-	merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls)
+	currentWorkingXls = merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls, outputDir)
 
-if len(controlParamDict['exportToPowerpoint']) > 0:
+if len(controlParamDict['udnForExportToPowerpoint']) > 0:
 	powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
-	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + 'UDNID'  #alert change and add actual udnid support
+	udnId = controlParamDict['udnForExportToPowerpoint'][0]
+	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId  #alert change and add actual udnid support
 	print cmd
 	subprocess.Popen(cmd, shell=True).wait()
 
 print 'final working vcf: ', currentWorkingVcf
+print 'final working xls: ', currentWorkingXls
 print 'stmp completed'
 print 'you ran stmp with the following parameters:', controlParamDict
 
