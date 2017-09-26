@@ -6,6 +6,7 @@ Tools for processing the final xls for use by GCs and visualization
 import pandas as pd
 import numpy as np
 import sys
+import os
 
 #a dict mapping the column name we want for the final xls to [columnNamePipelineXls, columnNameUserXls]
 columnMappings = {'CHROM': ['CHROM', 'Chromosome'], 'POS': ['POS', 'Position']}
@@ -48,7 +49,10 @@ def add_allele_freq_summary_column(df):
 		#ALERT todo: include the population from which the max freq comes
 		#df.set_value(index, 'Max_Allele_Freq', str(population) + ':' + str(freq))
 		df.set_value(index, 'GNOMAD_Max_Allele_Freq', freq)
-	print df
+	#print df
+
+def add_tier_column():
+	return 0
 
 #read xls sheets and create a dictionary mapping sheet names to dictionaries
 #it also returns a list of sheetNames
@@ -60,7 +64,7 @@ def read_xls_sheets(xlsName):
 		sheetDict[sheet] = xls.parse(sheet)
 	return sheetDict, sheetNames
 
-def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser):
+def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser, outputDir):
 	sheetDictPipeline, sheetDictPipelineNames = read_xls_sheets(spreadSheetPipeline)
 	sheetDictUser, sheetDictUserNames = read_xls_sheets(spreadSheetUser)
 	#We expect the user's xls to be just a single sheet output from ingenuity.  If its not, that breaks our code and we exit
@@ -68,9 +72,16 @@ def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser):
 		print 'error we except an excel sheet from the user with a single sheet'
 		sys.exit()
 	mergedDf = merge_and_add_columns(sheetDictPipeline[sheetDictPipelineNames[1]], sheetDictUser[sheetDictUserNames[0]], [ #indicies indicate where we can find the two actual data spreadsheets
-	'PolyPhen-2 Function Prediction']) #list of columns to add from the user uploaded columns
+	'Transcript ID', 'Transcript Variant', 'Protein Variant', 'Gene Region', 'Gene Symbol']) #list of columns to add from the user uploaded columns
 	add_allele_freq_summary_column(mergedDf)
 
+	#save everything to an xlsx
+	outputXlsxName = os.path.join(outputDir, 'outputTestMerged.xlsx')	 
+	writer = pd.ExcelWriter(outputXlsxName)
+	sheetDictPipeline[sheetDictPipelineNames[0]].to_excel(writer, 'Column Descriptions', index = False)
+	mergedDf.to_excel(writer,'Sheet1', index = False)
+	writer.save()
+	return outputXlsxName
 
 
 
