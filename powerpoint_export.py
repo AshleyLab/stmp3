@@ -305,6 +305,7 @@ print 'beginning export'
 #command line parsing 
 xlsFilename = sys.argv[1]
 udnId = sys.argv[2]
+outputDir = sys.argv[3]
 
 #we build up our presentation from a blank slide template
 prs = Presentation()
@@ -334,7 +335,7 @@ for sheetName, df in sheetDict.items():
 	#ALERT testing here is break statement
 	#break
 
-saveFilename = os.path.join(os.getcwd(), udnId + '_curationSlides.pptx')
+saveFilename = os.path.join(outputDir, udnId + '_curationSlides.pptx')
 print 'finished, saving file as ', saveFilename
 #filename is UDNID_slides.pptx
 prs.save(saveFilename)
