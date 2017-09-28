@@ -8,7 +8,7 @@ import subprocess
 import vcf
 import vcfUtils
 import general_utils
-import segregation_util
+#import segregation_util
 import os
 import logging
 #import stmp_annotation_util
