@@ -115,7 +115,7 @@ def display_udn_logo(slide):
 	#convert them to inches
 	logoLeft = PPTX_WIDTH - UDN_LOGO_WIDTH - LOGO_OFFSET_FROM_SIDE
 	logoTop = PPTX_HEIGHT - UDN_LOGO_HEIGHT - LOGO_OFFSET_FROM_SIDE
-	UDN_logo = '/share/PI/euan/apps/stmp3/necessaryDataFiles/UDN_logo_temp_screenshot.png' #path for where the UDN logo screenshot is
+	UDN_logo = '/share/PI/euan/apps/stmp3/stmp3codebase/UDN_logo_temp_screenshot.png' #path for where the UDN logo screenshot is
 	slide.shapes.add_picture(UDN_logo, logoLeft, logoTop, UDN_LOGO_WIDTH, UDN_LOGO_HEIGHT)
 
 #Add the UDN id to the corner
