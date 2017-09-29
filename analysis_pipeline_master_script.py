@@ -279,10 +279,10 @@ if len(controlParamDict['filtering']) > 0:
 
 ############---------ANNOTATION--------------##################
 #Paths for annotation files
-exacPath = '/share/PI/euan/apps/stmp/data/datasets/datasetsForVcfanno/ExAC.r0.3.1.sites.vep.vcf.gz'
+exacPath = '/scratch/PI/euan/common/stmpDatafiles/ExAC.r0.3.1.sites.vep.vcf.gz'
 caddPath = '/scratch/users/noahfrie/devCode/stmp2/vcfanno/annotationDataFiles/cadd_v1.3.vcf.gz'
 gnomadPath = '/scratch/PI/euan/common/gnomad_data/vcf/exomes/gnomad.exomes.r2.0.1.sites.vcf.gz'  #note has to be the absolute path
-clinvarPath = '/share/PI/euan/apps/stmp/data/datasets/datasetsForVcfanno/clinvar_20170905.vcf.gz'
+clinvarPath = '/scratch/PI/euan/common/stmpDatafiles/clinvar_20170905.vcf.gz'
 
 
 #ALERT todo: move all annotation files to a common location instead of inside my directory
@@ -290,9 +290,9 @@ if len(controlParamDict['annotation']) > 0:
 	#run annotation scripts (range annotation, point annotation etc)
 	#TODO: change these to be adjusted by if/else logic
 	myTestConfDict = {}
-	#TODO need to sucessfully export the whole thing
-	if 'cdD' in controlParamDict['annotation']: #do cadd score annotation
-		myTestConfDict[caddPath] = ['raw', 'phred']
+	#TODO need to sucessfully export the whole thing  #dont do this for now; rely on ingenuity
+	#if 'cdD' in controlParamDict['annotation']: #do cadd score annotation
+	#	myTestConfDict[caddPath] = ['raw', 'phred']
 	if 'exA' in controlParamDict['annotation']: #exac
 		#do all exac annotations
 		myTestConfDict[exacPath] = ['KG_AF_POPMAX', 'ESP_AF_POPMAX']
