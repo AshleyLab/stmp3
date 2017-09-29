@@ -111,15 +111,16 @@ onlyKeepSpecifiedColumns = False
 
 #main loop through the vcf file
 #goes through each line, first gets columns from the info fields then headers which it exports
-def vcf_to_xls(vcfFilePath, outputDir):
+def vcf_to_xls(vcfFilePath, outputDir, udnId):
 	print 'writing ', vcfFilePath, ' to xls format'
+	df = None #declare df variable in global scope
+	infoDf = None #declare infoDf variable in global scope
 	with open(vcfFilePath) as f:
 		firstRecordFlag = True #flag to trigger the initialization of the df
-		df = None #declare df variable in global scope
-		infoDf = None #declare infoDf variable in global scope
 		lines = f.readlines()
 		infoFieldsDict = {} #a dict indexed by key containing the info field information: NUMBER?, TYPE, DESCRIPTION 
 		for line in lines:
+			#print line
 			if line[0] == '#':
 				#read in the info fields
 				if line[0:6] == '##INFO':
@@ -137,7 +138,7 @@ def vcf_to_xls(vcfFilePath, outputDir):
 		df = only_keep_specified_columns(df, columnsToInclude)
 	
 	#and finally write the dataframe to an xls	
-	outputXlsxName = os.path.join(outputDir, 'stmpAnnotatedOutput.xlsx')	 
+	outputXlsxName = os.path.join(outputDir, udnId + '_stmpAnnotatedOutput.xlsx')	 
 	writer = pd.ExcelWriter(outputXlsxName)
 	infoDf.to_excel(writer, 'Column Descriptions', index = False)
 	df.to_excel(writer,'Sheet1', index = False)
