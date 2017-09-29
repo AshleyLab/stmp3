@@ -306,7 +306,7 @@ if len(controlParamDict['annotation']) > 0:
 	confFileName = os.path.join(os.getcwd(), 'myTestConfFile.toml')
 	prepare_vcfanno_conf.write_conf_file(confFileName, myTestConfDict)
 	vcfannoPath = '/home/noahfrie/noahfrie/devCode/stmp2/vcfanno/'
-	outputVcfPath = add_suffix_to_vcf(currentWorkingVcf, 'testVCFANNO')
+	outputVcfPath = add_suffix_to_vcf(currentWorkingVcf, 'final_annotated_vcf')
 	#We need to cd into the vcfanno directory, run it, then cd back into our current directory
 	os.chdir(vcfannoPath)
 
@@ -333,27 +333,29 @@ if len(controlParamDict['filtering']) > 0:
 
 ###########-----------XLS CREATION AND PROCESSING-------------------######################
 #CREATE the tiered xls--Now we work with excel sheets etc
+udnId = controlParamDict['udnId'][0]
+
 if currentWorkingVcf != None:
-	currentWorkingXls = write_annotated_vcf_to_xls.vcf_to_xls(currentWorkingVcf, outputDir)
+	currentWorkingXls = write_annotated_vcf_to_xls.vcf_to_xls(currentWorkingVcf, outputDir, udnId)
 
 if len(controlParamDict['alreadyGeneratedXls']) > 0:  #set the current working vcf to be what the user specified if they specified something
 	currentWorkingXls = controlParamDict['alreadyGeneratedXls'][0]
 
 if len(controlParamDict['gcXls']) > 0:  #if a gc (genetic counselor) xls is included, go and perform the spreadsheet merging script
 	gcXls = controlParamDict['gcXls'][0]
-	currentWorkingXls = merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls, outputDir)
+	currentWorkingXls = merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls, outputDir, udnId)
 
-if len(controlParamDict['udnForExportToPowerpoint']) > 0:
-	powerPointExportScriptPath = '/share/PI/euan/apps/stmp3/stmp3codebase/powerpoint_export.py'
-	udnId = controlParamDict['udnForExportToPowerpoint'][0]
+if currentWorkingXls is not None:
+	powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
+	#powerPointExportScriptPath = '/share/PI/euan/apps/stmp3/stmp3codebase/powerpoint_export.py'
 	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId + ' ' + outputDir
 	print cmd
 	subprocess.Popen(cmd, shell=True).wait()
 
-print 'final working vcf: ', currentWorkingVcf
-print 'final working xls: ', currentWorkingXls
-print 'stmp completed'
-print 'you ran stmp with the following parameters:', controlParamDict
+print 'final vcf file is called: ', currentWorkingVcf
+print 'the final xls file is called: ', currentWorkingXls
+print 'stmp completed successfully'
+#print 'you ran stmp with the following parameters:', controlParamDict
 
 
 
