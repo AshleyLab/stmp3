@@ -344,7 +344,7 @@ if len(controlParamDict['gcXls']) > 0:  #if a gc (genetic counselor) xls is incl
 	currentWorkingXls = merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls, outputDir)
 
 if len(controlParamDict['udnForExportToPowerpoint']) > 0:
-	powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
+	powerPointExportScriptPath = '/share/PI/euan/apps/stmp3/stmp3codebase/powerpoint_export.py'
 	udnId = controlParamDict['udnForExportToPowerpoint'][0]
 	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId + ' ' + outputDir
 	print cmd
