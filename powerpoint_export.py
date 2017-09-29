@@ -9,6 +9,9 @@ from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE
 import sys
 import os
 
+reload(sys)
+sys.setdefaultencoding("latin-1")
+
 import xls_parsing_functions
 
 #################################################################################
@@ -314,11 +317,12 @@ sheetDict = xls_parsing_functions.read_xls_sheets(xlsFilename)
 sheetsToExclude = set()
 		#union the sheets we asked it to include with those that dont have proper columns
 sheetsToExclude = sheetsToExclude.union(set(xls_parsing_functions.exclude_sheets_based_on_missing_columns(sheetDict)))
+#sheetsToExclude = None #ALERT temp hack
 #remove all sheets to exlude from our dict
-for sheet in sheetsToExclude:
+#for sheet in sheetsToExclude:
 	#print sheetDict[sheet].columns
 	#print '-------'
-	del sheetDict[sheet]
+	#del sheetDict[sheet]
 
 #Main loop: create a slide for every variant specified for inclusion by checking out all the sheets and rows of the excel sheet
 for sheetName, df in sheetDict.items():
@@ -336,6 +340,6 @@ for sheetName, df in sheetDict.items():
 	#break
 
 saveFilename = os.path.join(outputDir, udnId + '_curationSlides.pptx')
-print 'finished, saving file as ', saveFilename
+print 'powerpoint export finished, saving powerpoint file as ', saveFilename
 #filename is UDNID_slides.pptx
 prs.save(saveFilename)
