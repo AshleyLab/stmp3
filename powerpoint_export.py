@@ -11,6 +11,7 @@ import os
 
 reload(sys)
 sys.setdefaultencoding("latin-1")
+#sys.setdefaultencoding('utf-8')
 
 import xls_parsing_functions
 
@@ -31,12 +32,12 @@ TABLE_WIDTH = Inches(2.75)
 #these lists are a list of (displayTableName, excelColumnName) pairs
 #Alert the RVIS value is not validated
 #The column names are what come from the vcf info tags
-IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'NC'),
-('PolyPhen:', 'PolyPhen-2 Function'),
+IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'SIFT Function Prediction'),
+('PolyPhen:', 'PolyPhen-2 Function Prediction'),
 ('MutationTaster:', 'NI'),
 ('RVIS:', 'RVIS'),
 ('CADD:', 'CADD Score'),
-('PhylopP100:', 'NA'),
+('PhylopP100:', 'Conservation phyloP p-value'),
 ('UCSC:', 'UCSC')]
 #Alert the exac pop max value is incorrect
 ALLELE_TABLE_ROW_NAMES = [('ExAC (overall):','ExAC (%)'),
@@ -81,6 +82,26 @@ UDN_ID_LEFT_OFFSET = Inches(8.0)
 
 #Helper Methods for making slides
 
+#when writing this script I dealt with a series of indecipherable errors with unicode decoding
+#this always occurs when text is going to pptx format
+#to do so every time text goes to pptx it needs to be made safe
+def make_string_safe_for_unicode(string):
+	try:
+	    string.decode('utf-8')
+	    if len(string) > 2:
+	    	print 'string is long enough', string
+	    	return string 
+	    else:
+		    if string.isdigit() or string.isalpha():
+				print 'is digit or aplpha', string
+				return string
+		    else:
+		    	print 'not long enough nor alpha', string
+		    	return 'no value'
+	except UnicodeError:
+		print string, 'failed the test'
+		return 'no value'
+
 #sets the text size and performs magic with text size, font etc
 def set_text_size_and_font(shape, size):
 	tf = shape.text_frame
@@ -90,7 +111,7 @@ def set_text_size_and_font(shape, size):
 #makes text in a paragraph italics, bold and underlined if needed, adjusts size if specified
 def apply_italics_bold_underlining_and_size(p, text, italic, bold, underlined, size = Pt(10)):
 	run = p.add_run()
-	run.text = text
+	run.text = make_string_safe_for_unicode(text)
 	font = run.font
 	if italic: font.italic = True
 	if bold: font.bold = True
@@ -107,7 +128,7 @@ def set_shape_text(shape, labelText, sourceText):
 	text_frame = shape.text_frame
 	text_frame.clear()
 	p = text_frame.paragraphs[0]
-	p.text = labelText + sourceText
+	p.text = make_string_safe_for_unicode(labelText + sourceText)
 	p.font.italic = True 
 	p.font.size = Pt(10)
 	p.alignment = PP_ALIGN.LEFT
@@ -124,12 +145,16 @@ def display_udn_logo(slide):
 #Add the UDN id to the corner
 def display_udn_id(slide, udnId):
 	txBox = slide.shapes.add_textbox(UDN_ID_LEFT_OFFSET, UDN_ID_TOP_OFFSET, Inches(1.0), Inches(1.0))
-	txBox.text = udnId
+	txBox.text = make_string_safe_for_unicode(udnId)
 
 #creates the gene name display at the top of the slide
 def display_gene_name(topOfSlideTextbox, dfRow):
 	geneName = xls_parsing_functions.get_xls_value(dfRow, 'Gene Symbol')
-	topOfSlideTextbox.text = "GENE: " + geneName
+	print geneName
+	print '@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+	geneName = geneName.encode('utf-8').strip()
+	if len(geneName) < 2: geneName = 'not found' #we need to hack around some unicode errors
+	topOfSlideTextbox.text = make_string_safe_for_unicode("GENE: " + geneName)
 	#we get the first paragraph (which is set by deafult), and make it bold
 	topOfSlideTextbox.paragraphs[0].font.bold = True
 
@@ -143,19 +168,20 @@ def display_tscriptId_tscriptVariant_proteinVariant_and_exon(topOfSlideTextbox, 
 	text = ' | '.join([tscriptId, tscriptVariant, proteinVariant, exon])
 	#add the text to the slide 
 	p = topOfSlideTextbox.add_paragraph()
-	p.text = text
+	#text = text.encode('utf-8').strip()
+	p.text = make_string_safe_for_unicode(text)
 
 def display_chr_pos_ref_alt(topOfSlideTextbox, dfRow):
-	chromosome = xls_parsing_functions.get_xls_value(dfRow,'CHROM', '****')
-	pos = xls_parsing_functions.get_xls_value(dfRow,'POS', '****')
-	ref = xls_parsing_functions.get_xls_value(dfRow,'REF', '****')
-	alt = xls_parsing_functions.get_xls_value(dfRow,'ALT', '****')
+	chromosome = xls_parsing_functions.get_xls_value(dfRow,'Chromosome', '****')
+	pos = xls_parsing_functions.get_xls_value(dfRow,'Position', '****')
+	ref = xls_parsing_functions.get_xls_value(dfRow,'Reference Allele', '****')
+	alt = xls_parsing_functions.get_xls_value(dfRow,'Sample Allele', '****')
 	chrPos = ':'.join([chromosome, pos])
 	refAlt = ">".join([ref,alt])
 	text = ''.join([chrPos, refAlt])
 	#add the text to the slide
 	p = topOfSlideTextbox.add_paragraph()
-	p.text = text
+	p.text = make_string_safe_for_unicode(text)
 
 #displays the textbox that we show on the top of the slide (this include chr pos, transcript variant etc)
 def display_top_of_slide_textbox(slide, dfRow):
@@ -210,8 +236,8 @@ def set_table_header_rows(slide, table, rightHeader, leftHeader):
 	adjust_cell_color(table, 0, 1, RGBColor(0, 0, 0))
 	set_text_size_and_font(table.cell(0, 0), TABLE_TEXT_SIZE)
 	set_text_size_and_font(table.cell(0, 1), TABLE_TEXT_SIZE)
-	table.cell(0, 0).text = rightHeader
-	table.cell(0, 1).text = leftHeader
+	table.cell(0, 0).text = make_string_safe_for_unicode(rightHeader)
+	table.cell(0, 1).text = make_string_safe_for_unicode(leftHeader)
 
 #set the width and height dimensions of a table
 def set_table_dimensions(table, nRows):
@@ -229,8 +255,12 @@ def set_table_body_rows(slide, table, dfRow, rowNames):
 		rowValue = xls_parsing_functions.get_xls_value(dfRow, excelKey)
 		set_text_size_and_font(table.cell(idx, 0), TABLE_TEXT_SIZE)
 		set_text_size_and_font(table.cell(idx, 1), TABLE_TEXT_SIZE)
+		
+		displayRowName = make_string_safe_for_unicode(displayRowName)
+		rowValue = make_string_safe_for_unicode(rowValue)
 		table.cell(idx, 0).text = displayRowName
 		table.cell(idx, 1).text = rowValue
+
 		#Make the cells white
 		adjust_cell_color(table, idx, 0, RGBColor(255, 255, 255))
 		adjust_cell_color(table, idx, 1, RGBColor(255, 255, 255))
