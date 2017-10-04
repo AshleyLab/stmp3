@@ -389,17 +389,8 @@ for sheetName, df in sheetDict.items():
 		#print '*************'
 		#Alert add an if statement for the 'export tab' the gcs will create 
 		if True:
-			makeSlide = True
-			try:
-				row['Gene Symbol']
-				pass
-			except AttributeError:
-				makeSlide = False
-			#print row['Gene Symbol']
-			#print '{{{{{{{{{{{{{{{{{{{{{{{{{{{{{'
-			if makeSlide:
-				slide = prs.slides.add_slide(blank_slide_layout)
-				populate_slide(slide, row, udnId)
+			slide = prs.slides.add_slide(blank_slide_layout)
+			populate_slide(slide, row, udnId)
 		#ALERT testing here is break statement 
 		#break
 	#ALERT testing here is break statement
