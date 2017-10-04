@@ -8,7 +8,9 @@ import numpy as np
 import sys
 import os
 
+
 reload(sys)
+sys.setdefaultencoding('utf-8')
 sys.setdefaultencoding("latin-1")  #ingenuity exports are encoded this way I think
 
 #a dict mapping the column name we want for the final xls to [columnNamePipelineXls, columnNameUserXls]
@@ -54,6 +56,13 @@ def add_allele_freq_summary_column(df):
 		df.set_value(index, 'GNOMAD_Max_Allele_Freq', freq)
 	#print df
 
+def fix_ref_or_alt_column_for_indels(df, refKey, altKey):
+	for index, row in df.iterrows():
+		if type(row[altKey]) == float: 
+			df.set_value(index, altKey, '_')
+		if type(row[refKey]) == float: 
+			df.set_value(index, refKey, '_')
+
 def add_tier_column():
 	return 0
 
@@ -75,6 +84,9 @@ def sort_sheets(df):
 def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser, outputDir, udnId):
 	sheetDictPipeline, sheetDictPipelineNames = read_xls_sheets(spreadSheetPipeline)
 	sheetDictUser, sheetDictUserNames = read_xls_sheets(spreadSheetUser)
+
+	fix_ref_or_alt_column_for_indels(sheetDictUser[sheetDictUserNames[0]], 'Reference Allele', 'Sample Allele') #this code fixes the syntax of indels for the user inputed sheet
+	fix_ref_or_alt_column_for_indels(sheetDictPipeline[sheetDictPipelineNames[1]], 'REF', 'ALT') #this code fixes the syntax of indels for the pipeline inputed sheet
 	#We expect the user's xls to be just a single sheet output from ingenuity.  If its not, that breaks our code and we exit
 	if len(sheetDictUser) != 1:
 		print 'error we expect an excel sheet from the user with a single sheet'
@@ -91,9 +103,9 @@ def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser, outp
 	#save everything to an xlsx
 	outputXlsxName = os.path.join(outputDir, udnId + '_merged.xlsx')
 
-	writer = pd.ExcelWriter(outputXlsxName)
+	writer = pd.ExcelWriter(outputXlsxName,options={'encoding':'latin-1'})
+
 	#sheetDictPipeline[sheetDictPipelineNames[0]].to_excel(writer, 'Column Descriptions', index = False)
-	print mergedDfUser
 	mergedDfUser.to_excel(writer,'Sheet1', index = False)
 
 	writer.save()
