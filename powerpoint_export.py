@@ -89,17 +89,15 @@ def make_string_safe_for_unicode(string):
 	try:
 	    string.decode('utf-8')
 	    if len(string) > 2:
-	    	print 'string is long enough', string
+	    	print string
 	    	return string 
 	    else:
 		    if string.isdigit() or string.isalpha():
-				print 'is digit or aplpha', string
+				print string
 				return string
 		    else:
-		    	print 'not long enough nor alpha', string
 		    	return 'no value'
 	except UnicodeError:
-		print string, 'failed the test'
 		return 'no value'
 
 #sets the text size and performs magic with text size, font etc
@@ -150,10 +148,9 @@ def display_udn_id(slide, udnId):
 #creates the gene name display at the top of the slide
 def display_gene_name(topOfSlideTextbox, dfRow):
 	geneName = xls_parsing_functions.get_xls_value(dfRow, 'Gene Symbol')
-	print geneName
-	print '@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-	geneName = geneName.encode('utf-8').strip()
-	if len(geneName) < 2: geneName = 'not found' #we need to hack around some unicode errors
+	if len(geneName) < 2:
+		print geneName
+		geneName = 'not found' #we need to hack around some unicode errors
 	topOfSlideTextbox.text = make_string_safe_for_unicode("GENE: " + geneName)
 	#we get the first paragraph (which is set by deafult), and make it bold
 	topOfSlideTextbox.paragraphs[0].font.bold = True
