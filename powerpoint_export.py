@@ -109,7 +109,10 @@ def set_text_size_and_font(shape, size):
 #makes text in a paragraph italics, bold and underlined if needed, adjusts size if specified
 def apply_italics_bold_underlining_and_size(p, text, italic, bold, underlined, size = Pt(10)):
 	run = p.add_run()
-	run.text = make_string_safe_for_unicode(text)
+	try:
+		run.text = make_string_safe_for_unicode(text)
+	except ValueError:
+		run.text = 'no value'
 	font = run.font
 	if italic: font.italic = True
 	if bold: font.bold = True
@@ -126,7 +129,10 @@ def set_shape_text(shape, labelText, sourceText):
 	text_frame = shape.text_frame
 	text_frame.clear()
 	p = text_frame.paragraphs[0]
-	p.text = make_string_safe_for_unicode(labelText + sourceText)
+	try:
+		p.text = make_string_safe_for_unicode(labelText + sourceText)
+	except ValueError:
+		p.text = 'no value'
 	p.font.italic = True 
 	p.font.size = Pt(10)
 	p.alignment = PP_ALIGN.LEFT
@@ -143,7 +149,10 @@ def display_udn_logo(slide):
 #Add the UDN id to the corner
 def display_udn_id(slide, udnId):
 	txBox = slide.shapes.add_textbox(UDN_ID_LEFT_OFFSET, UDN_ID_TOP_OFFSET, Inches(1.0), Inches(1.0))
-	txBox.text = make_string_safe_for_unicode(udnId)
+	try:
+		txBox.text = make_string_safe_for_unicode(udnId)
+	except ValueError:
+		txBox.text = 'no value'
 
 #creates the gene name display at the top of the slide
 def display_gene_name(topOfSlideTextbox, dfRow):
@@ -151,7 +160,10 @@ def display_gene_name(topOfSlideTextbox, dfRow):
 	if len(geneName) < 2:
 		#print geneName
 		geneName = 'not found' #we need to hack around some unicode errors
-	topOfSlideTextbox.text = make_string_safe_for_unicode("GENE: " + geneName)
+	try:
+		topOfSlideTextbox.text = make_string_safe_for_unicode("GENE: " + geneName)
+	except ValueError:
+		topOfSlideTextbox.text = 'no value'
 	#we get the first paragraph (which is set by deafult), and make it bold
 	topOfSlideTextbox.paragraphs[0].font.bold = True
 
@@ -166,7 +178,10 @@ def display_tscriptId_tscriptVariant_proteinVariant_and_exon(topOfSlideTextbox, 
 	#add the text to the slide 
 	p = topOfSlideTextbox.add_paragraph()
 	#text = text.encode('utf-8').strip()
-	p.text = make_string_safe_for_unicode(text)
+	try:
+		p.text = make_string_safe_for_unicode(text)
+	except ValueError:
+		p.text = 'no value'
 
 def display_chr_pos_ref_alt(topOfSlideTextbox, dfRow):
 	chromosome = xls_parsing_functions.get_xls_value(dfRow,'Chromosome', '****')
@@ -178,7 +193,10 @@ def display_chr_pos_ref_alt(topOfSlideTextbox, dfRow):
 	text = ''.join([chrPos, refAlt])
 	#add the text to the slide
 	p = topOfSlideTextbox.add_paragraph()
-	p.text = make_string_safe_for_unicode(text)
+	try:
+		p.text = make_string_safe_for_unicode(text)
+	except ValueError:
+		p.text = 'no value'
 
 #displays the textbox that we show on the top of the slide (this include chr pos, transcript variant etc)
 def display_top_of_slide_textbox(slide, dfRow):
@@ -233,8 +251,14 @@ def set_table_header_rows(slide, table, rightHeader, leftHeader):
 	adjust_cell_color(table, 0, 1, RGBColor(0, 0, 0))
 	set_text_size_and_font(table.cell(0, 0), TABLE_TEXT_SIZE)
 	set_text_size_and_font(table.cell(0, 1), TABLE_TEXT_SIZE)
-	table.cell(0, 0).text = make_string_safe_for_unicode(rightHeader)
-	table.cell(0, 1).text = make_string_safe_for_unicode(leftHeader)
+	try:
+		table.cell(0, 0).text = make_string_safe_for_unicode(rightHeader)
+	except ValueError:
+		table.cell(0, 0).text = 'no value'
+	try:
+		table.cell(0, 1).text = make_string_safe_for_unicode(leftHeader)
+	except ValueError:
+		table.cell(0, 1).text = 'no value'
 
 #set the width and height dimensions of a table
 def set_table_dimensions(table, nRows):
@@ -255,8 +279,14 @@ def set_table_body_rows(slide, table, dfRow, rowNames):
 		
 		displayRowName = make_string_safe_for_unicode(displayRowName)
 		rowValue = make_string_safe_for_unicode(rowValue)
-		table.cell(idx, 0).text = displayRowName
-		table.cell(idx, 1).text = rowValue
+		try:
+			table.cell(idx, 0).text = displayRowName
+		except ValueError:
+			table.cell(idx, 0).text = 'no value'
+		try:
+			table.cell(idx, 1).text = rowValue
+		except ValueError:
+			table.cell(idx, 1).text = 'no value'
 
 		#Make the cells white
 		adjust_cell_color(table, idx, 0, RGBColor(255, 255, 255))
