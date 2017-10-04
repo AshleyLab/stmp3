@@ -5,6 +5,10 @@ import re
 import numpy as np
 import os
 
+reload(sys)
+sys.setdefaultencoding("latin-1")
+#sys.setdefaultencoding('utf-8')
+
 #VCF indicies: CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT_TAGS_NAMES	FORMAT_TAGS_VALUES	UDN78139
 #indexDict = {'CHROM':0,'POS':1,'ID':2,'REF':3,'ALT':4,'QUAL':5,'FILTER':6,'INFO':7,'FORMAT':8,'UDNHeader':9}
 
