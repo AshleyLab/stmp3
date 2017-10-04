@@ -86,15 +86,14 @@ UDN_ID_LEFT_OFFSET = Inches(8.0)
 #this always occurs when text is going to pptx format
 #to do so every time text goes to pptx it needs to be made safe
 def make_string_safe_for_unicode(string):
-	#if string =
 	try:
 	    string.decode('utf-8')
 	    if len(string) > 2:
-	    	print string
+	    	#print string
 	    	return string 
 	    else:
 		    if string.isdigit() or string.isalpha():
-				print string
+				#print string
 				return string
 		    else:
 		    	return 'no value'
@@ -150,7 +149,7 @@ def display_udn_id(slide, udnId):
 def display_gene_name(topOfSlideTextbox, dfRow):
 	geneName = xls_parsing_functions.get_xls_value(dfRow, 'Gene Symbol')
 	if len(geneName) < 2:
-		print geneName
+		#print geneName
 		geneName = 'not found' #we need to hack around some unicode errors
 	topOfSlideTextbox.text = make_string_safe_for_unicode("GENE: " + geneName)
 	#we get the first paragraph (which is set by deafult), and make it bold
@@ -360,6 +359,8 @@ for sheetName, df in sheetDict.items():
 		#print '*************'
 		#Alert add an if statement for the 'export tab' the gcs will create 
 		if True:
+			print type(row['Gene Symbol'])
+			print '{{{{{{{{{{{{{{{{{{{{{{{{{{{{{'
 			slide = prs.slides.add_slide(blank_slide_layout)
 			populate_slide(slide, row, udnId)
 		#ALERT testing here is break statement 
