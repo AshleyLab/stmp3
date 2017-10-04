@@ -86,6 +86,7 @@ UDN_ID_LEFT_OFFSET = Inches(8.0)
 #this always occurs when text is going to pptx format
 #to do so every time text goes to pptx it needs to be made safe
 def make_string_safe_for_unicode(string):
+	#if string =
 	try:
 	    string.decode('utf-8')
 	    if len(string) > 2:
