@@ -94,7 +94,7 @@ def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser, outp
 	mergedDfPipeline = merge_and_add_columns(sheetDictPipeline[sheetDictPipelineNames[1]], sheetDictUser[sheetDictUserNames[0]], [ #indicies indicate where we can find the two actual data spreadsheets
 	'Transcript ID', 'Transcript Variant', 'Protein Variant', 'Gene Region', 'Gene Symbol'], 0, 1) #list of columns to add from the user uploaded columns
 	mergedDfUser = merge_and_add_columns(sheetDictUser[sheetDictUserNames[0]], sheetDictPipeline[sheetDictPipelineNames[1]], [ #indicies indicate where we can find the two actual data spreadsheets
-	'AF_EAS', 'AF_NFE', 'AF_SAS', 'AF_AMR', 'AF_AFR', 'NC', 'NI', 'NA', 'ESP_AF_POPMAX', 'KG_AF_POPMAX', 'SD', 'SF'], 1, 0) # the 0s /1s relate to is it the GC xls first or the pipeline xls first
+	'AF_EAS', 'AF_NFE', 'AF_SAS', 'AF_AMR', 'AF_AFR', 'NC', 'NI', 'NA', 'ESP_AF_POPMAX', 'KG_AF_POPMAX', 'SD', 'SF', 'QUAL', 'ID', 'FILTER', 'GT', 'NJ', 'SX', 'GI'], 1, 0) # the 0s /1s relate to is it the GC xls first or the pipeline xls first
 	add_allele_freq_summary_column(mergedDfUser)
 
 	if False:
