@@ -53,6 +53,7 @@ import prepare_vcfanno_conf
 import write_annotated_vcf_to_xls
 import merge_and_process_xls
 import general_preprocessing
+import annotate_from_web_searches
 #import segregation_util
 
 #where this script is (useful for tools like vcf anno where we need to cd in and out of the directory)
@@ -344,6 +345,12 @@ if len(controlParamDict['alreadyGeneratedXls']) > 0:  #set the current working v
 if len(controlParamDict['gcXls']) > 0:  #if a gc (genetic counselor) xls is included, go and perform the spreadsheet merging script
 	gcXls = controlParamDict['gcXls'][0]
 	currentWorkingXls = merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls, outputDir, udnId)
+
+#Now do XLS annotation (we annotate XLSs because I find them easier to work with)
+#note that we do this after generating the ingenuity XLS
+if len(controlParamDict['websearchAnnotations']) > 0:
+	currentWorkingXls = annotate_from_web_searches.annotate_from_searches(controlParamDict['websearchAnnotations'], currentWorkingXls)
+#########XLS annotation##############
 
 if currentWorkingXls is not None:
 	#powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
