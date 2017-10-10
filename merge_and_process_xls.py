@@ -112,4 +112,48 @@ def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser, outp
 	return outputXlsxName
 
 
+renameDict = {'SX': 'SwissProtExpression', 'GI': 'ProximalGeneInfo', 'SD': 'SwissProtDiseaseAssociation', 'NJ': 'MutationTaster', 'SF': 'SwissProtFunction', 'NA': 'Phylop', 'NI': 'MutationTasterPVal', 'NC': 'Sift', 'GNOMAD_Max_Allele_Freq': 'GNOMADMaxAlleleFreq'}
+#utility function we use to make the columns of the xls human readable as needed
+def make_cols_human_readable(df): 
+	colsToRename = renameDict
+	#make sure we dont try to rename a column that isnt actually there
+	for key, value in colsToRename.items():
+		if key not in df.columns.tolist():
+			del colsToRename[key]
+	df = df.rename(columns=colsToRename)
+	return df
+
+orderedCols = ['Chromosome', 'Position', 'Reference Allele', 'Sample Allele', 'Variation Type', 'Gene Region', 
+'Gene Symbol', 'Transcript ID', 'Transcript Variant', 'Protein Variant', 'Translation Impact',
+'GNOMAD_Max_Allele_Freq'
+]
+def sort_cols(df):
+	#inefficient way to order the columns
+	firstCols = [] #all columns whose order we care about
+	lastCols = [] #put all columns we dont specify specifically at the end
+	for col in orderedCols:
+		if col in df.columns.tolist():
+			firstCols.append(col)
+	for col in df.columns.tolist():
+		if col not in firstCols:
+			lastCols.append(col)
+	sortedCols = firstCols + lastCols
+	df = df.reindex_axis(sortedCols, axis=1)
+	return df
+
+
+#function to rename columns, reorder columns etc in xls data
+def improve_legibility_of_xls(xlsName):
+	xls = pd.ExcelFile(xlsName)
+	df = xls.parse(xls.sheet_names[0]) 
+	#to imporve legibility we do two things: make columns readable and sort columns
+	df = make_cols_human_readable(df)
+	df = sort_cols(df)
+	outputXlsxName = xlsName
+	writer = pd.ExcelWriter(outputXlsxName,options={'encoding':'latin-1'})
+	df.to_excel(writer,'Sheet1', index = False)
+	writer.save()
+	return outputXlsxName
+
+
 
