@@ -5,6 +5,7 @@ import sys
 import pandas as pd
 import numpy as np
 import urllib
+import requests
 import re
 
 bingWebSearchKey ='960301165233425c8cb9bdd8d1d718a4' #note this is a free trial key and will eventually expire or be exhausted
@@ -13,11 +14,13 @@ bingWebSearchKey ='960301165233425c8cb9bdd8d1d718a4' #note this is a free trial 
 searchFunctions = {		
  	'omim': lambda row: find_omim_link(row),	
  	'rvis': lambda row: find_rvis_value(row),
- 	#'fathmm': lambda row: parse_varsome_for_fathmm(row)
+ 	'fathmm': lambda row: parse_varsome_for_col(row, 'fathmm_score'),
+ 	'mgi': lambda row: parse_mgi(row)
  }
 
 def safely_convert_val_to_str(val):
-	return str(val)
+	return str(val).decode('utf-8', 'ignore')
+	#return str(val)
 
 #helper function to find the first result in a search that is the correct url
 def find_first_correct_result_url(firstFiftyResults, correctWebpageString):
@@ -63,20 +66,42 @@ def find_rvis_value(row):
 	rvisScore = find_and_clean_regex(firstHalfRegexPattern, actualValueRegexPattern, secondHalfRegexPattern, html)
 	return rvisScore
 
-def parse_varsome_for_fathmm(row):
+#gets a single column value from varsome (called multiple times)
+def parse_varsome_for_col(row, field):
 	#get the key for the varsome search
 	chromosome = safely_convert_val_to_str(row['Chromosome'])
 	position = safely_convert_val_to_str(row['Position'])
 	ref = safely_convert_val_to_str(row['Reference Allele'])
 	alt = safely_convert_val_to_str(row['Sample Allele'])
-	baseVarsomeUrl = 'https://varsome.com/variant/hg19/'
-	varsomeUrl = baseVarsomeUrl + '-'.join([chromosome,position,ref,alt]) #properly format the url
-	html = get_raw_html(varsomeUrl)
-	
-	regex1 = ''
-	#once we have the url lets go do our regex
-	#print html
-	sys.exit()
+	prefixVarsomeUrl = 'https://api.varsome.com/lookup/'
+	suffixVarsomeUrl = '?add-all-data=1'
+	varsomeUrl = prefixVarsomeUrl + ':'.join([chromosome,position,ref,alt]) + suffixVarsomeUrl #properly format the url
+	response = requests.get(varsomeUrl)
+	val = ''
+	try:
+		jsonResponse = response.json()
+		val = jsonResponse['dbnsfp'][0][field][0]
+	except:
+		pass
+	return val
+
+#parses the MGI information for the gene in question
+#we get the html for a text file associated with the phenotype report
+def parse_mgi(row):
+	geneName = safely_convert_val_to_str(row['Gene Symbol'])
+	prefixMGIUrl = 'http://www.informatics.jax.org/allele/report.txt?phenotype=&nomen='
+	suffixMGIUrl = '&chromosome=any&cm=&coordinate=&coordUnit=bp'
+	returnVal = ''
+	MGIUrl = prefixMGIUrl + geneName + suffixMGIUrl
+	#url = 'http://www.informatics.jax.org/allele/report.txt?phenotype=&nomen=TKT&chromosome=any&cm=&coordinate=&coordUnit=bp'
+	html = get_raw_html(MGIUrl)
+	#parse this text file to get what I want
+	phenotypeIndex = 8
+	for line in html.split('\n')[1:]: #skip the header line
+		splitByTab = line.split('\t')
+		if len(splitByTab) > 8:
+			returnVal += splitByTab[8] #the value I want is at line 8
+	return returnVal
 
 def add_cols_for_df(df, searchKeys):
 	for key, function in searchFunctions.items():
@@ -84,6 +109,7 @@ def add_cols_for_df(df, searchKeys):
 			df[key] = np.empty(len(df.index))
 			df[key] = df[key].astype(str) #alert change based on column--we need to set columns to default to be strings
 
+#use this as a global variable so we dont have to do edge cases for how functions from our dictionary are set up
 #based on an input list of search keys we create a 
 def annotate_from_searches(searchKeys, xlsName):
 	xls = pd.ExcelFile(xlsName)
@@ -94,7 +120,7 @@ def annotate_from_searches(searchKeys, xlsName):
 		#then iterate over all search functions that we are on
 		for key, function in searchFunctions.items():
 			if key in searchKeys: #only seach the keys that the user actually wants to search
-				function = searchFunctions[key]
+				function = searchFunctions[key] 
 				value = function(row)
 				df.set_value(index, key, value)
 
