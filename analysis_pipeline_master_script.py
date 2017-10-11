@@ -352,8 +352,9 @@ if len(controlParamDict['websearchAnnotations']) > 0:
 	currentWorkingXls = annotate_from_web_searches.annotate_from_searches(controlParamDict['websearchAnnotations'], currentWorkingXls)
 #########XLS annotation##############
 
-####fix column names###########
-currentWorkingXls = merge_and_process_xls.improve_legibility_of_xls(currentWorkingXls)
+####fix column names########### #only if we are in gc XLS mode
+if len(controlParamDict['gcXls']) > 0:
+	currentWorkingXls = merge_and_process_xls.improve_legibility_of_xls(currentWorkingXls)
 
 if currentWorkingXls is not None:
 	#powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
