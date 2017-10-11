@@ -144,8 +144,9 @@ def vcf_to_xls(vcfFilePath, outputDir, udnId):
 	#and finally write the dataframe to an xls	
 	outputXlsxName = os.path.join(outputDir, udnId + '_stmpAnnotatedOutput.xlsx')	 
 	writer = pd.ExcelWriter(outputXlsxName)
+	print 'I am a cat'
 	infoDf.to_excel(writer, 'Column Descriptions', index = False)
-	df.to_excel(writer,'Sheet1', index = False)
+	df.to_excel(writer,'Sheet1', index = False)  
 	writer.save()
 	print 'xlsx data written to ', outputXlsxName
 	return outputXlsxName
