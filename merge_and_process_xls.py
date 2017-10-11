@@ -20,11 +20,6 @@ columnMappings = {'CHROM': ['CHROM', 'Chromosome'], 'POS': ['POS', 'Position']}
 #and looping over DFs
 #this will not work if we have big spreadsheets, in that case we need to implement a pandas merge
 def merge_and_add_columns(df1, df2, userColumnsToAdd, idxForColMappingsdf1, idxForColMappingsdf2):
-	#dont try to merge on columns we dont actually have
-	for val in userColumnsToAdd:
-		if val not in df1.columns.tolist():
-			userColumnsToAdd.remove(val)
-
 	#now do the merge
 	colNames = df1.columns.tolist() + userColumnsToAdd
 	numRows = len(df1.index)
