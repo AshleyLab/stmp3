@@ -34,16 +34,16 @@ TABLE_WIDTH = Inches(2.75)
 #The column names are what come from the vcf info tags
 IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'SIFT Function Prediction'),
 ('PolyPhen:', 'PolyPhen-2 Function Prediction'),
-('MutationTaster:', 'NI'),
-('RVIS:', 'RVIS'),
+('MutationTaster:', 'MutationTaster'),
+('RVIS:', 'rvis'),
 ('CADD:', 'CADD Score'),
 ('PhylopP100:', 'Conservation phyloP p-value'),
 ('UCSC:', 'UCSC')]
 #Alert the exac pop max value is incorrect
 ALLELE_TABLE_ROW_NAMES = [('ExAC (overall):','ExAC (%)'),
-('ExAC (popmax):', 'ESP_AF_POPMAX'),
+('ExAC (popmax):', 'ExAC Frequency'),
 ('gnomAD (overall):', 'gnomad'),
-('gnomAD (popmax):', 'GNOMAD_Max_Allele_Freq'),
+('gnomAD (popmax):', 'GNOMADMaxAlleleFreq'),
 ('1000Genomes:', 'KG_AF_POPMAX')]
 ROWS_IN_SILICO_TABLE = len(IN_SILICO_TABLE_ROW_NAMES) + 1
 ROWS_ALLELE_TABLE = len(ALLELE_TABLE_ROW_NAMES) + 1
@@ -213,7 +213,7 @@ def display_gene_function_textbox(slide, dfRow):
 	if(True): geneFunctionHeight = DEFAULT_TEXTBOX_HEIGHT
 	shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, TEXT_BOX_LEFT_OFFSET, ELEMENT_TOP_OFFSET, TEXT_BOX_WIDTH, geneFunctionHeight)
 	set_shape_color(shape, 80, 172, 196)
-	info = xls_parsing_functions.get_xls_value(dfRow,'SF')
+	info = xls_parsing_functions.get_xls_value(dfRow,'SwissProtFunction')
 	set_shape_text(shape, "Gene function: ", info)
 	return ELEMENT_TOP_OFFSET + geneFunctionHeight
 
@@ -225,7 +225,7 @@ def display_functional_studies_textbox(slide, dfRow, currentOffsetFromTop):
 	if(True): functionalStudiesHeight = DEFAULT_TEXTBOX_HEIGHT
 	shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, TEXT_BOX_LEFT_OFFSET, functionalStudiesOffset, TEXT_BOX_WIDTH, functionalStudiesHeight)
 	set_shape_color(shape, 156, 186, 95)
-	info = xls_parsing_functions.get_xls_value(dfRow, 'Animal Model')
+	info = xls_parsing_functions.get_xls_value(dfRow, 'mgi')
 	set_shape_text(shape, "Functional studies: ", info)
 	return currentOffsetFromTop + DEFAULT_TEXTBOX_HEIGHT + OFFSET_BETWEEN_STUDIES_BOX
 
@@ -236,7 +236,7 @@ def display_known_disease_association_textbox(slide, dfRow, currentOffsetFromTop
 	shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, TEXT_BOX_LEFT_OFFSET, knownDiseaseAssocOffset, TEXT_BOX_WIDTH, knownDiseaseAssocHeight)
 	set_shape_color(shape, 190, 7, 18)
 	#Alert we need to change this
-	info = xls_parsing_functions.get_xls_value(dfRow, 'SD')
+	info = xls_parsing_functions.get_xls_value(dfRow, 'SwissProtDiseaseAssociation')
 	set_shape_text(shape, "Known Disease Association: ", info)
 
 ######################################################################################################
