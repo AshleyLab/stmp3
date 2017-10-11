@@ -359,7 +359,8 @@ if len(controlParamDict['gcXls']) > 0:
 if currentWorkingXls is not None:
 	#powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
 	powerPointExportScriptPath = '/share/PI/euan/apps/stmp3/stmp3codebase/powerpoint_export.py'
-	cmd = 'python {pptxScript} '.format(pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId + ' ' + outputDir
+	pythonPath = '/share/PI/euan/apps/bcbio/anaconda/bin/python'
+	cmd = '{pythonP} {pptxScript} '.format(pythonP = pythonPath, pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId + ' ' + outputDir
 	print cmd
 	subprocess.Popen(cmd, shell=True).wait()
 
