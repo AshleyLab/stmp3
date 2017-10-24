@@ -32,12 +32,12 @@ TABLE_WIDTH = Inches(2.75)
 #these lists are a list of (displayTableName, excelColumnName) pairs
 #Alert the RVIS value is not validated
 #The column names are what come from the vcf info tags
-IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'SIFT Function Prediction'),
+IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'Sift'),
 ('PolyPhen:', 'PolyPhen-2 Function Prediction'),
 ('MutationTaster:', 'MutationTaster'),
 ('RVIS:', 'rvis'),
 ('CADD:', 'CADD Score'),
-('PhylopP100:', 'Conservation phyloP p-value'),
+('PhylopP100:', 'Phylop'),
 ('UCSC:', 'UCSC')]
 #Alert the exac pop max value is incorrect
 ALLELE_TABLE_ROW_NAMES = [('ExAC (overall):','ExAC (%)'),
