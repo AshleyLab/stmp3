@@ -273,7 +273,12 @@ if len(controlParamDict['filtering']) > 0:
 		outputFileName = outputFileName.strip('.gz') #we should strip the .gz because filter vcf by variant list outputs to a uncompressed file
 		'ALERT! PROBLEM BUG HERE THE OUTPUT SHOULDNT BE BGZIPED'
 		#alert fix the hack on variant list to filter on
-		currentWorkingVcf = filter_vcf_by_variant_list.filter_vcf_by_variant_list(controlParamDict['variantListToFilterOn'][0], currentWorkingVcf, outputFileName)
+		if len(controlParamDict['variantListToFilterOn']) > 0:
+			currentWorkingVcf = filter_vcf_by_variant_list.filter_vcf_by_variant_list(controlParamDict['variantListToFilterOn'][0], currentWorkingVcf, outputFileName)
+		else: 
+			variantList = filter_vcf_by_variant_list.write_xls_to_variant_list(controlParamDict['gcXls'][0], controlParamDict['udnId'][0])
+			controlParamDict['variantListToFilterOn'].append(variantList)
+			currentWorkingVcf = os.path.join(os.getcwd(), filter_vcf_by_variant_list.filter_vcf_by_variant_list(controlParamDict['variantListToFilterOn'][0], currentWorkingVcf, outputFileName))
 		#run segregation filtering script
 		#segregation_util.filter_by_segregation(currentWorkingVcf, pedFile, outputDir, segregationModelType)
 ##########################################################################################
@@ -298,7 +303,8 @@ if len(controlParamDict['annotation']) > 0:
 		#do all exac annotations
 		myTestConfDict[exacPath] = ['KG_AF_POPMAX', 'ESP_AF_POPMAX']
 	if 'gnA' in controlParamDict['annotation']: #gnomad
-		myTestConfDict[gnomadPath] = ['AF_AFR', 'AF_AMR', 'AF_ASJ', 'AF_EAS', 'AF_FIN', 'AF_NFE', 'AF_OTH', 'AF_SAS']
+		myTestConfDict[gnomadPath] = ['AF_AFR', 'AF_AMR', 'AF_ASJ', 'AF_EAS', 'AF_FIN', 'AF_NFE', 'AF_OTH', 'AF_SAS', #allele freqs
+		'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS']
 	if 'clV' in controlParamDict['annotation']: #clinvar  alert unclear if it is working
 		myTestConfDict[clinvarPath] = ['CLNSIG']
 		#myTestConfDict['/scratch/users/noahfrie/devCode/stmp2/vcfanno/annotationDataFiles/common_no_known_medical_impact_20170905.vcf.gz'] = ['CLNSIG']
@@ -352,7 +358,7 @@ if len(controlParamDict['websearchAnnotations']) > 0:
 	currentWorkingXls = annotate_from_web_searches.annotate_from_searches(controlParamDict['websearchAnnotations'], currentWorkingXls)
 #########XLS annotation##############
 
-####fix column names########### #only if we are in gc XLS mode
+####fix column names and values########### #only if we are in gc XLS mode
 if len(controlParamDict['gcXls']) > 0:
 	currentWorkingXls = merge_and_process_xls.improve_legibility_of_xls(currentWorkingXls)
 
