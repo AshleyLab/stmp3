@@ -8,3 +8,8 @@ Here are the stages of processing data in the pipeline goes through, and the ass
 Part 0: check coherency of arguments--stub code, doesn't do anything right now
 Part 1: calling.  Stub for calling rtg.  Not implemented
 Part 2: preprocess vcfs: for all family vcfs, run preprocessing script.  Default if you only specify a proband vcf it only does preprocessing on the 
+
+
+
+
+all the annotation could be performed with varsomem, but it is too slow to call the API over and over. I would recommend eventually calling varsome with the batch calling option
