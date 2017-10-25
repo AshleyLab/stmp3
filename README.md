@@ -14,7 +14,9 @@ Here are the stages of processing data in the pipeline goes through, and the ass
 **Part 0**: check coherency of arguments--stub code, *Currently not implemented*
 
 **Part 1**: calling.  Stub for calling rtg.  *Currently not implemented*
-##VCF Based Processing
+
+##VCF Based Processing##
+
 **Part 2**: preprocess vcfs: for all family vcfs, run preprocessing script.  Specify arguments on the *preprocessing* line of the tsv.  Default if you only specify a proband vcf it only does preprocessing on the proband vcf.  If you have specified family vcfs, after preprocessing all of the family vcfs, it merges them together.  
 **options:**
   * **smA**--split multiallelics and left normalize
