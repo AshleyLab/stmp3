@@ -39,8 +39,26 @@ Here are the stages of processing data in the pipeline goes through, and the ass
  if you would like to add more options, to check out what options you have run 'bcftools view -h vcfName', and add them where needed in the code (where I define lists like 'AF_AFR' etc)
  
  **Part 5**: perform post annotation filtering.  Ie filter out variants that have exac freq annotations that are too high.  *Currently not implemented*
- ##XLS based processing
+ 
+ ## XLS based processing
+ 
+ **Part 6**: write annotated vcf to xls. Every info field, every format field, the chromosome, the ref, and the alt becomes a column in an XLS spreadsheet. This spreadsheet will have two sheets, with the first sheet explaining the verbose explanations for every info field included in the xls.
+ 
+ **Part 7**: merge the the ingenuity spreadsheet with the annotated spreadsheet we have generated (using the function 'merge_columns_across_spreadsheets'). We keep all the columns in the ingenuity xls and columns we specifically include from the stmp spreadsheet. Currently we use a hack to match positions from the vcf (stmp) with positions from ingenuity because ingenuity does not left align their variants.  We consider two variants to be the same if their positions are close to each other and use the position and ref alt from stmp instead of ingenuity from here on out (see the function 'find_closest_match_for_pos' for logic) 
+ 
+ **Part 8**: annotate from web search/api based information.  
+**options:**
+ * **omim***--use microsoft cognitive api to search google for 'omim gene name' and return the first link found that comes from omim (TODO--maybe remove reliance on Ms cognitive api) 
+ * **rvis***--annotate with rvis score by parsing the html of rvis website
+ * **fathmm***--uses varsome api to get fathmm score ('fathmm_score')
+ * **mTaster***--uses varsome api to get mutation taster score ('mutationtaster_converted_rankscore')
+ * **sift***--uses varsome api to get sift score ('sift_converted_rankscore')
+ * **phylop***--uses varsome api to get phylop score ('phylop100way_vertebrate_rankscore')
+ * **mgi***--annotate with mgi information by parsing mgi html information
+ 
+ **Part 9**: improves legibility of xls.  This involves reordering the xls and changing column names to be human readable.  Refer to the variable renameDict in the script merge_and_process_xls.py
+ 
+ **Part 10**: export to powerpoint with the script powerpoint_export.py
 
-
-
+### Issues, thoughts and extensions
 all the annotation could be performed with varsomem, but it is too slow to call the API over and over. I would recommend eventually calling varsome with the batch calling option
