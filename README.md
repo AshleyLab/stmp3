@@ -16,7 +16,7 @@ Here are the stages of processing data in the pipeline goes through, and the ass
 **Part 1**: calling.  Stub for calling rtg.  Not implemented
 
 **Part 2**: preprocess vcfs: for all family vcfs, run preprocessing script.  Specify arguments on the *preprocessing* line of the tsv.  Default if you only specify a proband vcf it only does preprocessing on the proband vcf.  If you have specified family vcfs, after preprocessing all of the family vcfs, it merges them together.  
-* options:
+**options:**
   * **smA**--split multiallelics and left normalize
   * **chP**--strip chr prefix
   * **rhP**--reheader vcf
@@ -24,12 +24,12 @@ Here are the stages of processing data in the pipeline goes through, and the ass
   * **rmD**--remove duplicate records
 
 **Part 3**: perform pre annotation filtering. Specify arguments on the *filtering* line of the configuration tsv. The goal of pre annotation filtering is to reduce the size of the vcf with filter steps before the main computationally intensive steps begin. 
-* options:
+**options:**
  * **sgF**--perform segregation filtering to remove all variants that do not pass segregation--currently not implemented
  * **fbL**--filter by list.  Filters by a new line separated list of chrom\tpos for variants.  The user can provide a specific list of variants to filter in the *variantListToFilterOn* line of the configuration tsv. If not, the user script generates a list of variants to filter on by reading in the chromosomes and positions from the configuration tsv *gcXls* argument
 
 **Part 4**: annotation
-* options:
+**options:**
  * **exA**
  * **gnA**
  * **clV**
