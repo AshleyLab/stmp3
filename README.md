@@ -12,7 +12,9 @@ The main script for this repository is analysis_pipeline_master_script.py.  As t
 Here are the stages of processing data in the pipeline goes through, and the associated file suffix that is added (where relevant).  Note that file suffixes can be rendered in plain english by using the script "????.py"
 
 **Part 0**: check coherency of arguments--stub code, doesn't do anything right now
+
 **Part 1**: calling.  Stub for calling rtg.  Not implemented
+
 **Part 2**: preprocess vcfs: for all family vcfs, run preprocessing script.  Specify arguments on the *preprocessing* line of the tsv.  Default if you only specify a proband vcf it only does preprocessing on the proband vcf.  If you have specified family vcfs, after preprocessing all of the family vcfs, it merges them together.  
 ----options:
   **smA**--split multiallelics and left normalize
@@ -20,6 +22,7 @@ Here are the stages of processing data in the pipeline goes through, and the ass
   **rhP**--reheader vcf
   **ccP**--concat snp and indel vcfs
   **rmD**--remove duplicate records
+
 **Part 3**: perform pre annotation filtering. Specify arguments on the *filtering* line of the configuration tsv. The goal of pre annotation filtering is to reduce the size of the vcf with filter steps before the main computationally intensive steps begin. 
 ----options:
 **sgF**--perform segregation filtering to remove all variants that do not pass segregation--currently not implemented
