@@ -1,6 +1,9 @@
 # stmp3
 A third, more modest but less broken version of stmp
 
+usage: python analysis_pipeline_master_script.py argument_configs.tsv 
+please refer to the file template.tsv for an explanation of potential arguments
+
 Design philosophies
 "currentWorking[vcf, xls etc]"--> in order to facilitate the 
 
@@ -11,8 +14,16 @@ Here are the stages of processing data in the pipeline goes through, and the ass
 Part 0: check coherency of arguments--stub code, doesn't do anything right now
 Part 1: calling.  Stub for calling rtg.  Not implemented
 Part 2: preprocess vcfs: for all family vcfs, run preprocessing script.  Default if you only specify a proband vcf it only does preprocessing on the proband vcf.  If you have specified family vcfs, after preprocessing all of the family vcfs, it merges them together.  
-Part 3: perform pre annotation filtering.  The goal of pre annotation filtering is to reduce the size of the vcf with filter steps before the main computationally intensive steps begin
-
+----options:
+  smA--split multiallelics and left normalize
+  chP--strip chr prefix
+  rhP--reheader vcf
+  ccP--concat snp and indel vcfs
+  rmD--remove duplicate records
+Part 3: perform pre annotation filtering.  The goal of pre annotation filtering is to reduce the size of the vcf with filter steps before the main computationally intensive steps begin. 
+----options:
+sgF--perform segregation filtering to remove all variants that do not pass segregation--currently not implemented
+fbL--filter by list.  Filters by a new line separated list of chrom\tpos for variants
 
 
 all the annotation could be performed with varsomem, but it is too slow to call the API over and over. I would recommend eventually calling varsome with the batch calling option
