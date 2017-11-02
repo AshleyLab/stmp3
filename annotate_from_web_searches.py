@@ -15,20 +15,12 @@ api_key = 'pC4Kh2WCojBfs!*9SY?XcwXYdE6T*4870eZQvsXR' #THIS KEY EXPIRES ON NOVEME
 bingWebSearchKey ='960301165233425c8cb9bdd8d1d718a4' #note this is a free trial key and will eventually expire or be exhausted
 
 #mapping the column names to the function that fills them
-'an_amr'
-'an_afr'
-'an_asj'
-'an_eas'
-'an_fin'
-'an_nfe'
-'an_oth'
-'af_sas'
 searchFunctions = {		
  	'omim': lambda row: find_omim_link(row),	
  	'rvis': lambda row: find_rvis_value(row),
  	'fathmm': lambda row: parse_varsome_for_col(row, 'fathmm_score'),
  	'mTaster': lambda row: parse_varsome_for_col(row, 'mutationtaster_converted_rankscore'),
- 	'sift': lambda row: parse_varsome_for_col(row, 'sift_converted_rankscore'),
+ 	'sift': lambda row: parse_varsome_for_col(row, 'sift_score'),
  	'phylop': lambda row: parse_varsome_for_col(row, 'phylop100way_vertebrate_rankscore'),
  	'mgi': lambda row: parse_mgi(row)
  }
