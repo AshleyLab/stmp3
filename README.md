@@ -22,7 +22,7 @@ Here are the stages of processing data in the pipeline goes through, and the ass
   * **smA**--split multiallelics and left normalize
   * **chP**--strip chr prefix
   * **rhP**--reheader vcf
-  * **ccP**--concat snp and indel vcfs
+  * **ccP**--concat snp and indel vcfs (note if you include this argument for a case with SNP/INDEL vcfs it will break
   * **rmD**--remove duplicate records
 
 **Part 3**: perform pre annotation filtering. Specify arguments on the *filtering* line of the configuration tsv. The goal of pre annotation filtering is to reduce the size of the vcf with filter steps before the main computationally intensive steps begin. 
@@ -58,7 +58,17 @@ Here are the stages of processing data in the pipeline goes through, and the ass
  
  **Part 9**: improves legibility of xls.  This involves reordering the xls and changing column names to be human readable.  Refer to the variable renameDict in the script merge_and_process_xls.py
  
- **Part 10**: export to powerpoint with the script powerpoint_export.py
+ **Part 10**: export to powerpoint with the script powerpoint_export.py.  TODO: fix the field names
+
+## Use by GCs as app
+On the GC desktop there is a script called ?? that allows them to run the pipeline on their own.  Currently it has some limitations.  Here is how it is set up and the limitations/future:
+Code is hosted in /share/PI/euan/apps/stmp3/stmp3codebase.  This tracks STMP3 on github.  Note that all paths to scripts have to be paths to the scripts hosted in the stmp3codebase folder, otherwise the user won't have permission to execute thm.  Note that this can make development somewhat confusing.  TODO? make a dev/production mode to manage file paths
+All files are written to /scratch/PI/euan/common/udn/stmp3.  This is the only directory users/GC have write permissions for.  From the IGV desktop, the scripts the GCs use copy files to the folder gcCopiedInput.  They copy a version of template.tsv that they edit on the desktop and their ingenuity xls to this folder.  
+After copying files to sherlock, GC's ssh onto sherlock and execute the copy of analysis_pipeline_master in apps/stmp3.  This will write an output xls and powerpoint to the folder gcOutput.  GCs then exit sherlock, copy the files to the IGV desktop, then ssh again and run a script I created called clean_up_files.py which deletes everything from gcCopiedInput and gcOutput so users can use those folders again later.
+
 
 ### Issues, thoughts and extensions
 all the annotation could be performed with varsomem, but it is too slow to call the API over and over. I would recommend eventually calling varsome with the batch calling option
+
+### Errors issues that may come up
+
