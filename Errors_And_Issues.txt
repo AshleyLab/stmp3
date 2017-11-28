@@ -1,1 +1,0 @@
-The point of this file is to document known (and unsolved) errors and issues in this github repo.  
