@@ -72,3 +72,34 @@ all the annotation could be performed with varsomem, but it is too slow to call 
 
 ### Errors issues that may come up
 
+**Misaligned variant positions**
+This pipeline, as currently designed, relies on two different data sources for variant annotation.  Positions identified by ingenuity and positions in the VCF.  Ideally these two data sources should be identical--ingenuity was run on the exact same vcf as our pipeline.  However, they are not.  Ingenuity uses a baroque way of realigning and numbering non-SNP variant calls.  Sometimes this results in the same variant position and ref/alt, and oftentimes it doesnt.  In my investigations I have found there is no clear way to align positions called by Ingenuity and positions in the vcf itself.  Most worryingly, sometimes positions show up in ingenuity that are not found in the VCF at all.  Here are the instructions (provided by ingenuity), that you, intrepid future developer of this codebase, can use to properly line up files.
+Ingenuity Variant Analysis (IVA) does left-align exonic variants if not left-aligned already (before uploading to IVA). However, we recommend our users to upload left-aligned completely normalized indels to IVA as you did. You find the issue with matching variants from your original VCF to the variants position in IVA as IVA does not include the anchor position for indels / substitution type variants.
+
+Since you are uploading completely left-aligned and normalized indels, you can use the following guide lines to match the positions in IVA to the positions in the original VCF file.
+
+To do that, please export the variants in Text format and then compare with your original VCF file and exported Text file following the rules  to match the variant position. Please note, if you are using VA API and downloading XML format file, the same rules are applicable, only interchange the 'Text export' to 'XML' in the guidelines. Assuming you are exporting the variants in Text format from IVA, please see the rules below to match indels from your original VCF to the variants in the Text export. 
+
+Guidelines:
+
+**For deletion type mutation**
+VCF_chromosome = Text export_chromosome
+VCF_position = (Text export_position 1)
+VCF_ref = Extract Reference sequence base at (Text export_position 1)  + Text export_reference
+VCF_alt = Extract Reference sequence base at (Text export_position 1)
+**For Substitution type mutation** 
+VCF_chromosome = Text export_chromosome
+VCF_position = (Text export_position 1)
+VCF_ref = Extract Reference sequence base at (Text export_position 1)  + Text export_reference
+VCF_alt = Extract Reference sequence base at (Text export_position 1) + Text export_alternate
+**For Insertion type mutation**
+VCF_chromosome = Text export_chromosome
+VCF_position = Text export_position
+VCF_ref = Extract Reference sequence base at (Text export_position)
+VCF_alt= Extract Reference sequence base at (Text export_position) + Text export_alternate
+**For SNV type mutation**
+VCF_chromosome = Text export_chromosome
+VCF_position = Text export_position
+VCF_ref = Text export_reference
+VCF_alt = Text export_alternate
+
