@@ -80,6 +80,9 @@ Since you are uploading completely left-aligned and normalized indels, you can u
 
 To do that, please export the variants in Text format and then compare with your original VCF file and exported Text file following the rules  to match the variant position. Please note, if you are using VA API and downloading XML format file, the same rules are applicable, only interchange the 'Text export' to 'XML' in the guidelines. Assuming you are exporting the variants in Text format from IVA, please see the rules below to match indels from your original VCF to the variants in the Text export. 
 
+**Filename conventions**
+Filename must have the UDNID of the pateint in the filename.  Filenames with slashes may cause issues.
+
 Guidelines:
 
 **For deletion type mutation**
