@@ -57,7 +57,7 @@ import annotate_from_web_searches
 #import segregation_util
 
 #where this script is (useful for tools like vcf anno where we need to cd in and out of the directory)
-scriptPath = '/home/noahfrie/noahfrie/devCode/stmp2/code'
+scriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/'
 
 #parses the control tsv specified at the outset and returns a dictionary with controls
 #ALERT the code will break if the tsv doesnt have all required fields
@@ -169,6 +169,14 @@ currentWorkingVcf = None
 currentWorkingXls = None
 outputDir = controlParamDict['finalOutputDir'][0]
 
+#####################Set script paths
+vcfannoPath = '/home/noahfrie/noahfrie/devCode/stmp2/vcfanno/'
+if 'devMode' in controlParamDict['debugArguments']:
+	pass
+else:
+	pass
+
+
 #BEGIN PIPELINE#####################################################
 
 ############---------CALLING--------------##################
@@ -210,8 +218,9 @@ if len(controlParamDict['inputOrProbandVcf']) > 0:  #only do the following if an
 				snpVcf, indelVcf = get_snp_and_indel_files(fileDirectory, 'ALERT PICK THIS PARAMETER TO MAKE IT VCF')
 
 			#now we run general preprocessing dot py
-			#ALERT! some of these parameters should maybe live in the pipeline controls file
+			#ALERT! runs code from the app directory
 			preprocessingScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/general_preprocessing.py'
+			#preprocessingScriptPath = '/share/PI/euan/apps/stmp3/stmp3codebase/general_preprocessing.py'
 
 			#file abbreviations from analysis_pipeline_master
 			#smA (split multi-allelic)
@@ -246,19 +255,13 @@ if len(controlParamDict['inputOrProbandVcf']) > 0:  #only do the following if an
 			vcfs[cntr] = os.path.join(fileDirectory, find_final_preprocessed_vcf(fileDirectory))
 			cntr += 1
 
-	#if we have specified mfV (merge family vcfs) we merge all vcfs in the vcfs array
-	#ALERT temporary hack
-	currentWorkingVcf = vcfs[0]
-"""
-if 'mfV':
-	print 'noah'
-	#/scratch/PI/euan/common/udn/gateway/data/UDN639487/682358-UDN639487-M_H2VY7BCXY-1-ID09._snp_indel.reheader_final_preprocessed.vcf.gz
-	currentWorkingVcf = ''
-	#TODO: figure out where the files are and what they are called etc 
-	#ALERT add in code to call an
-	#call merge vcf script
-else:
-	currentWorkingVcf = vcfs[0]"""
+	#if there are multiple VCFS we are working with please merge them
+	if len(vcfs) > 1:
+		cmd = 'bcftools merge -o finalOutputMergedVcf.vcf' + ' '.join(vcfNames) #TODO ALERT SPECIFY FORMATTING FOR VCF NAMES
+		print cmd
+		currentWorkingVcf = os.path.join(os.getcwd(), 'finalOutputMergedVcf.vcf')
+	else:
+		currentWorkingVcf = vcfs[0]
 
 ##########################################################################################
 
@@ -275,10 +278,14 @@ if len(controlParamDict['filtering']) > 0:
 		#alert fix the hack on variant list to filter on
 		if len(controlParamDict['variantListToFilterOn']) > 0:
 			currentWorkingVcf = filter_vcf_by_variant_list.filter_vcf_by_variant_list(controlParamDict['variantListToFilterOn'][0], currentWorkingVcf, outputFileName)
-		else: 
+		elif len(controlParamDict['gcXls']) > 0: 
 			variantList = filter_vcf_by_variant_list.write_xls_to_variant_list(controlParamDict['gcXls'][0], controlParamDict['udnId'][0])
 			controlParamDict['variantListToFilterOn'].append(variantList)
 			currentWorkingVcf = os.path.join(os.getcwd(), filter_vcf_by_variant_list.filter_vcf_by_variant_list(controlParamDict['variantListToFilterOn'][0], currentWorkingVcf, outputFileName))
+		else: 
+			print 'error: the user asked to filter by a list and there was no list to filter on'
+			sys.exit()
+
 		#run segregation filtering script
 		#segregation_util.filter_by_segregation(currentWorkingVcf, pedFile, outputDir, segregationModelType)
 ##########################################################################################
@@ -301,18 +308,18 @@ if len(controlParamDict['annotation']) > 0:
 	#	myTestConfDict[caddPath] = ['raw', 'phred']
 	if 'exA' in controlParamDict['annotation']: #exac
 		#do all exac annotations
-		myTestConfDict[exacPath] = ['KG_AF_POPMAX', 'ESP_AF_POPMAX']
+		myTestConfDict[exacPath] = ['KG_AF_POPMAX', 'ESP_AF_POPMAX', 'clinvar_pathogenic', 'KG_AF_GLOBAL', 'KG_AC', 'POPMAX', 'AN_POPMAX', 'AC_POPMAX', 'AF', 'AN']
 	if 'gnA' in controlParamDict['annotation']: #gnomad
 		myTestConfDict[gnomadPath] = ['AF_AFR', 'AF_AMR', 'AF_ASJ', 'AF_EAS', 'AF_FIN', 'AF_NFE', 'AF_OTH', 'AF_SAS', #allele freqs
-		'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS']
+		'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS, AN_POPMAX', 'AN_Female', 'AN_Male']
 	if 'clV' in controlParamDict['annotation']: #clinvar  alert unclear if it is working
 		myTestConfDict[clinvarPath] = ['CLNSIG']
 		#myTestConfDict['/scratch/users/noahfrie/devCode/stmp2/vcfanno/annotationDataFiles/common_no_known_medical_impact_20170905.vcf.gz'] = ['CLNSIG']
 
-	#ALERT/ NOTE!  you must provide absolute paths for vcf anno to work!
+	#ALERT/ NOTE!  you must provide absolute paths for vcfanno to work!
 	confFileName = os.path.join(os.getcwd(), 'myTestConfFile.toml')
 	prepare_vcfanno_conf.write_conf_file(confFileName, myTestConfDict)
-	vcfannoPath = '/home/noahfrie/noahfrie/devCode/stmp2/vcfanno/'
+	#vcfannoPath = '/home/noahfrie/noahfrie/devCode/stmp2/vcfanno/'
 	outputVcfPath = add_suffix_to_vcf(currentWorkingVcf, 'final_annotated_vcf')
 	#We need to cd into the vcfanno directory, run it, then cd back into our current directory
 	os.chdir(vcfannoPath)
@@ -347,7 +354,7 @@ if currentWorkingVcf != None:
 
 if len(controlParamDict['alreadyGeneratedXls']) > 0:  #set the current working vcf to be what the user specified if they specified something
 	currentWorkingXls = controlParamDict['alreadyGeneratedXls'][0]
-
+	
 if len(controlParamDict['gcXls']) > 0:  #if a gc (genetic counselor) xls is included, go and perform the spreadsheet merging script
 	gcXls = controlParamDict['gcXls'][0]
 	currentWorkingXls = merge_and_process_xls.merge_columns_across_spreadsheets(currentWorkingXls, gcXls, outputDir, udnId)
