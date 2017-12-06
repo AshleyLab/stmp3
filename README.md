@@ -22,7 +22,7 @@ Here are the stages of processing data in the pipeline goes through, and the ass
   * **smA**--split multiallelics and left normalize
   * **chP**--strip chr prefix
   * **rhP**--reheader vcf
-  * **ccP**--concat snp and indel vcfs
+  * **ccP**--concat snp and indel vcfs (note if you include this argument for a case with SNP/INDEL vcfs it will break
   * **rmD**--remove duplicate records
 
 **Part 3**: perform pre annotation filtering. Specify arguments on the *filtering* line of the configuration tsv. The goal of pre annotation filtering is to reduce the size of the vcf with filter steps before the main computationally intensive steps begin. 
@@ -58,7 +58,51 @@ Here are the stages of processing data in the pipeline goes through, and the ass
  
  **Part 9**: improves legibility of xls.  This involves reordering the xls and changing column names to be human readable.  Refer to the variable renameDict in the script merge_and_process_xls.py
  
- **Part 10**: export to powerpoint with the script powerpoint_export.py
+ **Part 10**: export to powerpoint with the script powerpoint_export.py.  TODO: fix the field names
+
+## Use by GCs as app
+On the GC desktop there is a script called ?? that allows them to run the pipeline on their own.  Currently it has some limitations.  Here is how it is set up and the limitations/future:
+Code is hosted in /share/PI/euan/apps/stmp3/stmp3codebase.  This tracks STMP3 on github.  Note that all paths to scripts have to be paths to the scripts hosted in the stmp3codebase folder, otherwise the user won't have permission to execute thm.  Note that this can make development somewhat confusing.  TODO? make a dev/production mode to manage file paths
+All files are written to /scratch/PI/euan/common/udn/stmp3.  This is the only directory users/GC have write permissions for.  From the IGV desktop, the scripts the GCs use copy files to the folder gcCopiedInput.  They copy a version of template.tsv that they edit on the desktop and their ingenuity xls to this folder.  
+After copying files to sherlock, GC's ssh onto sherlock and execute the copy of analysis_pipeline_master in apps/stmp3.  This will write an output xls and powerpoint to the folder gcOutput.  GCs then exit sherlock, copy the files to the IGV desktop, then ssh again and run a script I created called clean_up_files.py which deletes everything from gcCopiedInput and gcOutput so users can use those folders again later.
+
 
 ### Issues, thoughts and extensions
 all the annotation could be performed with varsomem, but it is too slow to call the API over and over. I would recommend eventually calling varsome with the batch calling option
+
+### Errors issues that may come up
+
+**Misaligned variant positions**
+This pipeline, as currently designed, relies on two different data sources for variant annotation.  Positions identified by ingenuity and positions in the VCF.  Ideally these two data sources should be identical--ingenuity was run on the exact same vcf as our pipeline.  However, they are not.  Ingenuity uses a baroque way of realigning and numbering non-SNP variant calls.  Sometimes this results in the same variant position and ref/alt, and oftentimes it doesnt.  In my investigations I have found there is no clear way to align positions called by Ingenuity and positions in the vcf itself.  Most worryingly, sometimes positions show up in ingenuity that are not found in the VCF at all.  Here are the instructions (provided by ingenuity), that you, intrepid future developer of this codebase, can use to properly line up files.
+Ingenuity Variant Analysis (IVA) does left-align exonic variants if not left-aligned already (before uploading to IVA). However, we recommend our users to upload left-aligned completely normalized indels to IVA as you did. You find the issue with matching variants from your original VCF to the variants position in IVA as IVA does not include the anchor position for indels / substitution type variants.
+
+Since you are uploading completely left-aligned and normalized indels, you can use the following guide lines to match the positions in IVA to the positions in the original VCF file.
+
+To do that, please export the variants in Text format and then compare with your original VCF file and exported Text file following the rules  to match the variant position. Please note, if you are using VA API and downloading XML format file, the same rules are applicable, only interchange the 'Text export' to 'XML' in the guidelines. Assuming you are exporting the variants in Text format from IVA, please see the rules below to match indels from your original VCF to the variants in the Text export. 
+
+**Filename conventions**
+Filename must have the UDNID of the pateint in the filename.  Filenames with slashes may cause issues.
+
+Guidelines:
+
+**For deletion type mutation**
+VCF_chromosome = Text export_chromosome
+VCF_position = (Text export_position 1)
+VCF_ref = Extract Reference sequence base at (Text export_position 1)  + Text export_reference
+VCF_alt = Extract Reference sequence base at (Text export_position 1)
+**For Substitution type mutation** 
+VCF_chromosome = Text export_chromosome
+VCF_position = (Text export_position 1)
+VCF_ref = Extract Reference sequence base at (Text export_position 1)  + Text export_reference
+VCF_alt = Extract Reference sequence base at (Text export_position 1) + Text export_alternate
+**For Insertion type mutation**
+VCF_chromosome = Text export_chromosome
+VCF_position = Text export_position
+VCF_ref = Extract Reference sequence base at (Text export_position)
+VCF_alt= Extract Reference sequence base at (Text export_position) + Text export_alternate
+**For SNV type mutation**
+VCF_chromosome = Text export_chromosome
+VCF_position = Text export_position
+VCF_ref = Text export_reference
+VCF_alt = Text export_alternate
+
