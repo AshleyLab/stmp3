@@ -170,13 +170,11 @@ currentWorkingXls = None
 outputDir = controlParamDict['finalOutputDir'][0]
 
 #####################Set script paths
+pythonPath = 'python'
 vcfannoPath = '/home/noahfrie/noahfrie/devCode/stmp2/vcfanno/'
-if 'devMode' in controlParamDict['debugArguments']:
-	pass
-else:
-	pass
-
-
+codeBaseDir = sys.argv[0].strip(sys.argv[0].split('/')[len(sys.argv[0].split('/')) - 1]) #nasty line of code to get the directory where the code you are running is
+powerPointExportScriptPath = os.path.join(codeBaseDir, 'powerpoint_export.py')
+preprocessingScriptPath = os.path.join(codeBaseDir, 'general_preprocessing.py') 
 #BEGIN PIPELINE#####################################################
 
 ############---------CALLING--------------##################
@@ -219,9 +217,6 @@ if len(controlParamDict['inputOrProbandVcf']) > 0:  #only do the following if an
 
 			#now we run general preprocessing dot py
 			#ALERT! runs code from the app directory
-			preprocessingScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/general_preprocessing.py'
-			#preprocessingScriptPath = '/share/PI/euan/apps/stmp3/stmp3codebase/general_preprocessing.py'
-
 			#file abbreviations from analysis_pipeline_master
 			#smA (split multi-allelic)
 			#chP (string chromosome prefix)
@@ -293,7 +288,7 @@ if len(controlParamDict['filtering']) > 0:
 ############---------ANNOTATION--------------##################
 #Paths for annotation files
 exacPath = '/scratch/PI/euan/common/stmpDatafiles/ExAC.r0.3.1.sites.vep.vcf.gz'
-caddPath = '/scratch/users/noahfrie/devCode/stmp2/vcfanno/annotationDataFiles/cadd_v1.3.vcf.gz'
+caddPath = '/scratch/PI/euan/common/udn/stmp3/dataFiles/cadd_v1.3.vcf.gz'
 gnomadPath = '/scratch/PI/euan/common/gnomad_data/vcf/exomes/gnomad.exomes.r2.0.1.sites.vcf.gz'  #note has to be the absolute path
 clinvarPath = '/scratch/PI/euan/common/stmpDatafiles/clinvar_20170905.vcf.gz'
 
@@ -308,10 +303,10 @@ if len(controlParamDict['annotation']) > 0:
 	#	myTestConfDict[caddPath] = ['raw', 'phred']
 	if 'exA' in controlParamDict['annotation']: #exac
 		#do all exac annotations
-		myTestConfDict[exacPath] = ['KG_AF_POPMAX', 'ESP_AF_POPMAX', 'clinvar_pathogenic', 'KG_AF_GLOBAL', 'KG_AC', 'POPMAX', 'AN_POPMAX', 'AC_POPMAX', 'AF', 'AN']
+		myTestConfDict[exacPath] = ['KG_AF_POPMAX', 'ESP_AF_POPMAX', 'clinvar_pathogenic', 'KG_AF_GLOBAL', 'KG_AC', 'POPMAX', 'AN_POPMAX', 'AC_POPMAX', 'AF', 'AN', 'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS']
 	if 'gnA' in controlParamDict['annotation']: #gnomad
 		myTestConfDict[gnomadPath] = ['AF_AFR', 'AF_AMR', 'AF_ASJ', 'AF_EAS', 'AF_FIN', 'AF_NFE', 'AF_OTH', 'AF_SAS', #allele freqs
-		'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS, AN_POPMAX', 'AN_Female', 'AN_Male']
+		'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS', 'AN_POPMAX', 'AN_Female', 'AN_Male']
 	if 'clV' in controlParamDict['annotation']: #clinvar  alert unclear if it is working
 		myTestConfDict[clinvarPath] = ['CLNSIG']
 		#myTestConfDict['/scratch/users/noahfrie/devCode/stmp2/vcfanno/annotationDataFiles/common_no_known_medical_impact_20170905.vcf.gz'] = ['CLNSIG']
@@ -370,9 +365,6 @@ if len(controlParamDict['gcXls']) > 0:
 	currentWorkingXls = merge_and_process_xls.improve_legibility_of_xls(currentWorkingXls)
 
 if currentWorkingXls is not None:
-	#powerPointExportScriptPath = '/home/noahfrie/noahfrie/devCode/stmp3/powerpoint_export.py'
-	powerPointExportScriptPath = '/share/PI/euan/apps/stmp3/stmp3codebase/powerpoint_export.py'
-	pythonPath = '/share/PI/euan/apps/bcbio/anaconda/bin/python'
 	cmd = '{pythonP} {pptxScript} '.format(pythonP = pythonPath, pptxScript = powerPointExportScriptPath) + currentWorkingXls + ' ' + udnId + ' ' + outputDir
 	print cmd
 	subprocess.Popen(cmd, shell=True).wait()
