@@ -54,7 +54,7 @@ def add_allele_freq_summary_column(df):
 	df['GNOMAD_Max_Allele_Freq_POP'] = df['GNOMAD_Max_Allele_Freq_POP'].astype(str) #this will be a column of strings
 	for index, row in df.iterrows():
 		freqs = [convert_to_float_or_zero(row[i]) for i in alleleFreqCols]
-		population = alleleFreqCols[freqs.index(max(freqs))].strip('AF_')
+		population = alleleFreqCols[freqs.index(max(freqs))][3:]
 		freq = max(freqs)
 		#ALERT todo: include the population from which the max freq comes
 		#df.set_value(index, 'Max_Allele_Freq', str(population) + ':' + str(freq))
@@ -133,7 +133,7 @@ def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser, outp
 	mergedDfPipeline = merge_and_add_columns(sheetDictPipeline[sheetDictPipelineNames[1]], sheetDictUser[sheetDictUserNames[0]], [ #indicies indicate where we can find the two actual data spreadsheets
 	'Transcript ID', 'Transcript Variant', 'Protein Variant', 'Gene Region', 'Gene Symbol'], 0, 1) #list of columns to add from the user uploaded columns
 	
-	colsToAddToDf = ['AF_EAS', 'AF_NFE', 'AF_SAS', 'AF_AMR', 'AF_AFR', 'NC', 'NI', 'NA', 'ESP_AF_POPMAX', 'KG_AF_POPMAX', 'SD', 'SF', 'QUAL', 'ID', 'FILTER', 'GT', 'NJ', 'SX', 'GI', 'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS']
+	colsToAddToDf = ['AF_EAS', 'AF_NFE', 'AF_SAS', 'AF_AMR', 'AF_AFR', 'NC', 'NI', 'NA', 'ESP_AF_POPMAX', 'KG_AF_POPMAX', 'SD', 'SF', 'QUAL', 'ID', 'FILTER', 'GT', 'NJ', 'SX', 'GI', 'AN_AFR', 'AN_AMR', 'AN_ASJ', 'AN_EAS', 'AN_FIN', 'AN_NFE', 'AN_OTH', 'AN_SAS', 'clinvar_pathogenic', 'KG_AF_GLOBAL', 'KG_AC', 'POPMAX', 'AN_POPMAX', 'AC_POPMAX', 'AF', 'AN', 'AN_Female', 'AN_Male']
 	colsFinal = []
 	for x in colsToAddToDf: #fix the columns in case they are missing
 		if x in sheetDictPipeline[sheetDictPipelineNames[1]].columns.tolist():
@@ -157,7 +157,7 @@ def merge_columns_across_spreadsheets(spreadSheetPipeline, spreadSheetUser, outp
 	return outputXlsxName
 
 
-renameDict = {'SX': 'SwissProtExpression', 'GI': 'ProximalGeneInfo', 'SD': 'SwissProtDiseaseAssociation', 'mTaster': 'MutationTaster', 'SF': 'SwissProtFunction', 'phylop': 'Phylop', 'NI': 'MutationTasterPVal', 'sift': 'Sift', 'GNOMAD_Max_Allele_Freq': 'GNOMADMaxAlleleFreq'}
+renameDict = {'SX': 'SwissProtExpression', 'GI': 'ProximalGeneInfo', 'SD': 'SwissProtDiseaseAssociation', 'mTaster': 'MutationTaster', 'SF': 'SwissProtFunction', 'phylop': 'phyloP', 'NI': 'MutationTasterPVal', 'sift': 'Sift', 'GNOMAD_Max_Allele_Freq': 'GNOMADMaxAlleleFreq', 'POPMAX': 'ExacPopmax', 'AN_POPMAX': 'ExacANPopmax', 'AC_POPMAX': 'ExacACPopmax', 'AF':'ExacAf', 'AN':'ExacAn', 'AN_Female': 'GNOMAD_AN_FEMALE', 'AN_Male': 'GNOMAD_AN_MALE'}
 #utility function we use to make the columns of the xls human readable as needed
 def make_cols_human_readable(df): 
 	colsToRename = renameDict
