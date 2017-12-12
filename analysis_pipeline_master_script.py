@@ -252,6 +252,7 @@ if len(controlParamDict['inputOrProbandVcf']) > 0:  #only do the following if an
 
 	#if there are multiple VCFS we are working with please merge them
 	if len(vcfs) > 1:
+		vcfNames = vcfs
 		cmd = 'bcftools merge -o finalOutputMergedVcf.vcf' + ' '.join(vcfNames) #TODO ALERT SPECIFY FORMATTING FOR VCF NAMES
 		print cmd
 		currentWorkingVcf = os.path.join(os.getcwd(), 'finalOutputMergedVcf.vcf')
