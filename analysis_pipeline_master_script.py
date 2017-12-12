@@ -171,7 +171,7 @@ outputDir = controlParamDict['finalOutputDir'][0]
 
 #####################Set script paths
 pythonPath = 'python'
-vcfannoPath = '/home/noahfrie/noahfrie/devCode/stmp2/vcfanno/'
+vcfannoPath = '/share/PI/euan/apps/stmp3/vcfanno/'
 codeBaseDir = sys.argv[0].strip(sys.argv[0].split('/')[len(sys.argv[0].split('/')) - 1]) #nasty line of code to get the directory where the code you are running is
 powerPointExportScriptPath = os.path.join(codeBaseDir, 'powerpoint_export.py')
 preprocessingScriptPath = os.path.join(codeBaseDir, 'general_preprocessing.py') 
@@ -320,7 +320,7 @@ if len(controlParamDict['annotation']) > 0:
 	#We need to cd into the vcfanno directory, run it, then cd back into our current directory
 	os.chdir(vcfannoPath)
 
-	cmd = './vcfanno_linux64' + ' -p 4 -lua /home/noahfrie/noahfrie/devCode/stmp2/vcfanno/example/custom.lua ' + confFileName + ' ' + currentWorkingVcf + ' > ' + outputVcfPath
+	cmd = './vcfanno_linux64' + ' -p 4 -lua /share/PI/euan/apps/stmp3/vcfanno/example/custom.lua ' + confFileName + ' ' + currentWorkingVcf + ' > ' + outputVcfPath
 	print cmd 
 	subprocess.Popen(cmd, shell=True).wait()
 
