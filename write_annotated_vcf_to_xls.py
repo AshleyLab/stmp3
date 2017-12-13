@@ -72,17 +72,19 @@ def set_core_cols_for_row_of_df(df, addIdx, coreFieldsRow):
 def set_format_tags_for_row_of_df(df, addIdx, formatTagsNames, formatTagsRow):
 	cntr = 0
 	for key in formatTagsNames:
-		value = formatTagsRow[cntr]
+		value = '|'.join([r[cntr] for r in formatTagsRow]) #join together all the format tag info for all the samples
 		df.set_value(addIdx, key, value)
 		cntr += 1
 
 def set_row_of_df(df, colNames, splitLineFields, infoFieldsDict):
 	#first add an empty row to the df:
 	addIdx = len(df.index)
+	print splitLineFields[9:], len(splitLineFields)
+
 	coreFieldsRow = splitLineFields[:7]
 	infoFieldsRow = splitLineFields[7].split(';')
 	formatTagsNames = splitLineFields[8].split(':')
-	formatTagsRow = splitLineFields[9].split(':')
+	formatTagsRow =[x.split(':') for x in splitLineFields[9:]]  #take the format tags for every sample
 	df.loc[addIdx] = ['no value' for i in range(len(colNames))] #initialize the row to say 'no value' everywhere
 	set_core_cols_for_row_of_df(df, addIdx, coreFieldsRow)
 	set_info_fields_for_row_of_df(df, addIdx, infoFieldsRow, infoFieldsDict)
