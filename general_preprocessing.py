@@ -17,11 +17,11 @@ import logging
 fasta_ref="/share/PI/euan/apps/bcbio/genomes/Hsapiens/GRCh37/seq/GRCh37.fa"
 
 #define the logger globally so the whole program can see it
-logger = logging.getLogger("general_preprocessing")
+#logger = logging.getLogger("general_preprocessing")
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(level=logging.INFO, filemode='w', filename='general_preprocessing.log')
-logger.setLevel(logging.INFO)
-logger.info("\n\nLog File for general preprocessing")
+#logger.setLevel(logging.INFO)
+#logger.info("\n\nLog File for general preprocessing")
 
 #given a filepath extracts the udn id number and returns it
 #ie 547485_UDN123456_reheader.vcf.gz returns UDN123456
@@ -70,7 +70,7 @@ def bgzip_file(f):
 		print 'maybe the file is already compressed? If so please decompress it and try again'
 		print f
 		sys.exit()
-	logger.info('bgzipping file: ', f)
+	#logger.info('bgzipping file: ', f)
 	cmd = 'bgzip -c {fileToBeZipped} > "{fileToBeZipped}.gz"'.format(fileToBeZipped = f)
 	#logger.info('command to bgzip file: ' + cmd)
 	print cmd
@@ -92,9 +92,10 @@ def check_if_exists(curDir, flagStr):
 # The input data file must be position sorted and compressed by bgzip
 # TODO: The input data file must be position sorted. this is not tested and done yet
 def tabix_file(f):
-	logger.info('tabixing file: ', f)
+	#logger.info('tabixing file: ', f)
 	cmd = 'tabix {fileToBeTabix}'.format(fileToBeTabix = f)
-	logger.info('command to tabix file: ' + cmd)
+	#logger.info('command to tabix file: ' + cmd)
+	print 'dogs dogs dogs ', cmd
 	subprocess.Popen(cmd, shell=True).wait()
 	#note: we dont return anything (having the tabix'd file is sufficient)
 
@@ -104,12 +105,12 @@ def tabix_file(f):
 # -O, --output-type: Output compressed BCF (b), uncompressed BCF (u), compressed VCF (z), uncompressed VCF (v)
 # -o, --output FILE
 def concat_snp_indel(snpFile, indelFile):
-	logger.info("concatinating " + snpFile + " and " + indelFile)
+	#logger.info("concatinating " + snpFile + " and " + indelFile)
 	outputFile = strip_suffix(snpFile, True) + '_ccP.vcf.gz'
 	cmd = 'bcftools concat --allow-overlaps {snps} {indels} --output-type z --output {oFile}'.format(snps = snpFile, indels = indelFile, oFile = outputFile)
 	subprocess.Popen(cmd, shell=True).wait()
-	logger.info("output file after concatination: ", outputFile)
-	logger.info("cmd to concatinate snp and indel files: ", cmd)
+	#logger.info("output file after concatination: ", outputFile)
+	#logger.info("cmd to concatinate snp and indel files: ", cmd)
 	#return the output file path
 	return outputFile
 
@@ -129,9 +130,9 @@ def reheader_vcf(vcfFilePath):
 	cmd = 'echo "{udnid}"|bcftools reheader -s - -o "{reheadered_vcf_path_tmp}" "{non_reheadered_vcf_path}"'.format(udnid=vcf_name, reheadered_vcf_path_tmp=reheadered_vcf_path_tmp, non_reheadered_vcf_path=vcfFilePath)
 	subprocess.Popen(cmd, shell=True).wait()
 	os.rename(reheadered_vcf_path_tmp, reheadered_vcf_path)
-	logger.info('file before reheader: ' + vcfFilePath)
-	logger.info('file after reheader: ' + reheadered_vcf_path)
-	logger.info('command to reheader vcf: ', cmd)
+	#logger.info('file before reheader: ' + vcfFilePath)
+	#logger.info('file after reheader: ' + reheadered_vcf_path)
+	#logger.info('command to reheader vcf: ', cmd)
 	return reheadered_vcf_path
 
 
@@ -144,12 +145,12 @@ def reheader_vcf(vcfFilePath):
 # -O, --output-type: Output compressed BCF (b), uncompressed BCF (u), compressed VCF (z), uncompressed VCF (v)
 def split_multiallelic_norm_and_left_align(vcfFilePath):
 	outputFile = strip_suffix(vcfFilePath, False) + '_smA.vcf.gz'
-	logger.info('file before multiallelic splitting, left allignment and normalization: ' + vcfFilePath)
-	logger.info('file after multiallelic splitting, left allignment and normalization: ' + outputFile)
+	#logger.info('file before multiallelic splitting, left allignment and normalization: ' + vcfFilePath)
+	#logger.info('file after multiallelic splitting, left allignment and normalization: ' + outputFile)
 	#note I am omitting the end of shruti's commands which write the output to the output file
 	cmd = 'bcftools norm --multiallelics - --check-ref x --fasta-ref={fasta} {vcfFile} --output-type z --output {oFile}'.format(fasta=fasta_ref, vcfFile=vcfFilePath, oFile = outputFile)
 	subprocess.Popen(cmd, shell=True).wait()
-	logger.info('command to do multiallelic splitting, left allignment and normalization:' + cmd)
+	#logger.info('command to do multiallelic splitting, left allignment and normalization:' + cmd)
 	#return the path to the new file
 	return outputFile
 
@@ -158,11 +159,11 @@ def split_multiallelic_norm_and_left_align(vcfFilePath):
 # -d, --rm-dup snps|indels|both|all|none, If a record is present in multiple files, output only the first instance
 def remove_duplicate_records(vcfFilePath):
 	outputFile = strip_suffix(vcfFilePath, False) + '_rmD.vcf.gz'
-	logger.info('file before duplicate removal: ' + vcfFilePath)
-	logger.info('file after duplicate removal: ' + outputFile)
+	#logger.info('file before duplicate removal: ' + vcfFilePath)
+	#logger.info('file after duplicate removal: ' + outputFile)
 	cmd = 'bcftools norm -d both {vcfFile} --output-type z --output {oFile}'.format(vcfFile=vcfFilePath, oFile = outputFile)
 	subprocess.Popen(cmd, shell=True).wait()
-	logger.info('command for duplicate removal ' + cmd)
+	#logger.info('command for duplicate removal ' + cmd)
 	return outputFile
 
 #NOTE this should be superceded by a one line command eventually 
@@ -174,11 +175,11 @@ def stripChromosomePrefix(vcf_filepath, out_dir, skip_if_exists=False):
     '''
     chr_notation_file = '/scratch/PI/euan/common/udn/code/chromosome_notation.txt'
     outputFile = strip_suffix(vcf_filepath, False) + '_chP.vcf.gz'
-    logger.info('file before stripping chr prefix: ' + vcf_filepath)
-    logger.info('file after stripping chr prefix: ' + outputFile)
+    #logger.info('file before stripping chr prefix: ' + vcf_filepath)
+    #logger.info('file after stripping chr prefix: ' + outputFile)
     cmd = 'bcftools annotate --rename-chrs {chrNotationPath} {vcfFile} --output-type z --output {oFile}'.format(vcfFile=vcf_filepath, oFile = outputFile,chrNotationPath=chr_notation_file)
     subprocess.Popen(cmd, shell=True).wait()
-    logger.info('command for stripping chr prefix ' + cmd)
+    #logger.info('command for stripping chr prefix ' + cmd)
 
     return outputFile
 
@@ -186,7 +187,7 @@ def stripChromosomePrefix(vcf_filepath, out_dir, skip_if_exists=False):
 def rename_to_final(vcfPath):
 	finalName = strip_suffix(vcfPath, False) + '_final_preprocessed.vcf.gz'
 	cmd = 'mv {src} {dst}'.format(src = vcfPath, dst = finalName)
-	logger.info('cmd to rename file to the new name: ' + cmd)
+	#logger.info('cmd to rename file to the new name: ' + cmd)
 	subprocess.Popen(cmd, shell=True).wait()
 	return finalName
 
@@ -194,7 +195,7 @@ def rename_to_final(vcfPath):
 def delete_intermediate_files(intermediateFiles):
 	for f in intermediateFiles:
 		cmd = 'rm {fileToDelete}'.format(fileToDelete = f)
-		logger.info('cmd to delete file: ' + cmd)
+		#logger.info('cmd to delete file: ' + cmd)
 		subprocess.Popen(cmd, shell=True).wait()
 
 #TODO fix check file suffixes to see if something already exists currently its checking the wrong suffix
@@ -237,6 +238,15 @@ def apply_preprocessing(inputVcf, outputDir,
 		currentWorkingVcf = bgzip_file(inputVcf)
 		tabix_file(currentWorkingVcf)
 
+	if True:#stripChrPrefix:
+		#'TODO: implement this as a bcftools command.  Currently in vcfutils we have a hacky way to do it via code which should be superceded'
+		if check_if_exists(outputDir, 'strip1') != None:
+			currentWorkingVcf = check_if_exists(outputDir, 'strip1')
+		else:
+			intermediateFiles.append(currentWorkingVcf)
+			currentWorkingVcf = stripChromosomePrefix(currentWorkingVcf, outputDir)
+			tabix_file(currentWorkingVcf)
+
 	if reheaderVcf:
 		if check_if_exists(outputDir, 'reheader1') != None:
 			currentWorkingVcf = check_if_exists(outputDir, 'reheader1')
@@ -262,14 +272,6 @@ def apply_preprocessing(inputVcf, outputDir,
 			currentWorkingVcf = remove_duplicate_records(currentWorkingVcf)
 			tabix_file(currentWorkingVcf)
 
-	if stripChrPrefix:
-		#'TODO: implement this as a bcftools command.  Currently in vcfutils we have a hacky way to do it via code which should be superceded'
-		if check_if_exists(outputDir, 'strip1') != None:
-			currentWorkingVcf = check_if_exists(outputDir, 'strip1')
-		else:
-			intermediateFiles.append(currentWorkingVcf)
-			currentWorkingVcf = stripChromosomePrefix(currentWorkingVcf, outputDir)
-			tabix_file(currentWorkingVcf)
 
 	if deleteIntermediateFiles:
 		delete_intermediate_files(intermediateFiles)
@@ -327,7 +329,7 @@ def main():
 	#we implicitly assume that these are the two last values specified here
 	if concat:
 		snpFile, indelFile = sys.argv[len(sys.argv) - 2:]
-		logger.info(snpFile + " specified as snp file, " + indelFile + " specified as indel file")
+		#logger.info(snpFile + " specified as snp file, " + indelFile + " specified as indel file")
 	else:
 		snpFile = None
 		indelFile = None
