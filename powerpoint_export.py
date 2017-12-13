@@ -40,9 +40,9 @@ IN_SILICO_TABLE_ROW_NAMES = [('SIFT:', 'Sift'),
 ('PhylopP100:', 'Phylop'),
 ('UCSC:', 'UCSC')]
 #Alert the exac pop max value is incorrect
-ALLELE_TABLE_ROW_NAMES = [('ExAC (overall):','ExAC (%)'),
+ALLELE_TABLE_ROW_NAMES = [('ExAC (overall):','ExAC'),
 ('ExAC (popmax):', 'ExAC Frequency'),
-('gnomAD (overall):', 'gnomad'),
+('gnomAD (overall):', 'gnomAD'),
 ('gnomAD (popmax):', 'GNOMADMaxAlleleFreq'),
 ('1000Genomes:', 'KG_AF_POPMAX')]
 ROWS_IN_SILICO_TABLE = len(IN_SILICO_TABLE_ROW_NAMES) + 1
